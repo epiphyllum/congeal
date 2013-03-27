@@ -2,9 +2,10 @@ import sbt._
 import Keys._
 
 object BuildSettings {
+
   val buildSettings = Defaults.defaultSettings ++ Seq(
-    organization := "org.scalamacros",
-    version := "1.0.0",
+    organization := "mscs.sullivan.john",
+    version := "0.0.0",
     scalacOptions ++= Seq(),
     scalaVersion := "2.11.0-SNAPSHOT",
     scalaOrganization := "org.scala-lang.macro-paradise",
@@ -15,22 +16,24 @@ object BuildSettings {
 object MyBuild extends Build {
   import BuildSettings._
 
-  lazy val root: Project = Project(
-    "root",
-    file("core"),
+  lazy val parent = Project(
+    "congeal-parent",
+    file("."),
     settings = buildSettings
-  ) aggregate(macros, core)
+  ) aggregate(main, test)
 
-  lazy val macros: Project = Project(
-    "macros",
-    file("macros"),
+  lazy val main = Project(
+    "congeal-main",
+    file("congeal-main"),
     settings = buildSettings ++ Seq(
       libraryDependencies <+= (scalaVersion)("org.scala-lang.macro-paradise" % "scala-reflect" % _))
   )
 
-  lazy val core: Project = Project(
-    "core",
-    file("core"),
-    settings = buildSettings
-  ) dependsOn(macros)
+  lazy val test = Project(
+    "congeal-test",
+    file("congeal-test"),
+    settings = buildSettings ++ Seq(
+      libraryDependencies += "com.novocode" % "junit-interface" % "0.10-M3" % "test",
+      libraryDependencies += "junit" % "junit" % "4.11" % "test")
+  ) dependsOn(main)
 }
