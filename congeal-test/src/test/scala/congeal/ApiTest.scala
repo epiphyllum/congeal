@@ -14,11 +14,11 @@ class ApiTest {
 
   @Test
   def congealApiSaysHello() {
-    val goo = new AnyRef with congeal.api
-    goo.hello
+    class Foo { def bar = println("hi from foo") }
+    val goo = new congeal.api[Foo]
+    goo.bar
 
     println(compilingSource(""))
   }
-
   
 }
