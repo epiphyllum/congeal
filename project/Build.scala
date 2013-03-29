@@ -35,12 +35,12 @@ object MyBuild extends Build {
     "congeal-test",
     file("congeal-test"),
     settings = buildSettings ++ Seq(
-      libraryDependencies += "org.scala-lang.macro-paradise" % "scala-compiler" % "2.11.0-SNAPSHOT" % "test",
-      libraryDependencies += "org.scala-lang.macro-paradise" % "scala-library" % "2.11.0-SNAPSHOT" % "test",
-      libraryDependencies += "org.scala-lang.macro-paradise" % "scala-reflect" % "2.11.0-SNAPSHOT" % "test",
-      libraryDependencies += "org.scala-lang.macro-paradise" % "scala-partest" % "2.11.0-SNAPSHOT" % "test",
-      libraryDependencies += "org.scala-lang.macro-paradise" % "scala-actors" % "2.11.0-SNAPSHOT" % "test",
-      libraryDependencies += "com.novocode" % "junit-interface" % "0.10-M3" % "test",
-      libraryDependencies += "junit" % "junit" % "4.11" % "test")
+      libraryDependencies += "org.scala-lang.macro-paradise" % "scala-compiler" % "2.11.0-SNAPSHOT",
+      libraryDependencies += "org.scala-lang.macro-paradise" % "scala-library" % "2.11.0-SNAPSHOT",
+      libraryDependencies += "org.scala-lang.macro-paradise" % "scala-reflect" % "2.11.0-SNAPSHOT",
+      libraryDependencies += "org.scala-lang.macro-paradise" % "scala-partest" % "2.11.0-SNAPSHOT",
+      libraryDependencies += "org.scala-lang.macro-paradise" % "scala-actors" % "2.11.0-SNAPSHOT",
+      libraryDependencies += "com.novocode" % "junit-interface" % "0.10-M3",
+      libraryDependencies += "junit" % "junit" % "4.11")
   ) dependsOn(main)
 }
