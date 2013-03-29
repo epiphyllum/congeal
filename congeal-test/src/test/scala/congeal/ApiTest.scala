@@ -17,9 +17,7 @@ class ApiTest {
     val goo = new AnyRef with congeal.api
     goo.hello
 
-    println("HEY")
     println(compilingSource(""))
-
   }
 
   

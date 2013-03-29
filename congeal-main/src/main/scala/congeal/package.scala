@@ -4,11 +4,14 @@ import scala.reflect.macros.Context
 /** Contains implementations of the congeal type macros. */
 package object congeal {
 
-  /** Produces an API version of the supplied type `A`. */
-  type api[A] = macro apiImpl
+  /** Produces an API for the supplied type `A`. */
+  type api[A] = macro apiImpl[A]
 
-  def apiImpl(c: Context) = c.universe.Ident(c.universe.TypeName("C"))
+  def apiImpl[T: c.WeakTypeTag](c: Context) = {
+    import c.universe._
+    c.universe.Ident(c.universe.TypeName("C"))
+  }
 
-  trait C { def hello = println("hello world") }
+  class C { def bar = println("hello world") }
 
 }

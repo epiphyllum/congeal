@@ -29,8 +29,6 @@ object MyBuild extends Build {
       libraryDependencies <+= (scalaVersion)("org.scala-lang.macro-paradise" % "scala-reflect" % _))
   )
 
-  // TODO: separate code that depends on scala-compiler into another project
-
   lazy val test = Project(
     "congeal-test",
     file("congeal-test"),
