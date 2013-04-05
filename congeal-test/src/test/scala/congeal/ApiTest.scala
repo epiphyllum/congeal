@@ -12,8 +12,6 @@ class ApiTest {
 
   @Test
   def congealApiSaysHello() {
-    println("hi from congealApiSaysHello")
-
     import congeal.api
     import congeal.C
     class Foo { def bar = println("hi from foo") }

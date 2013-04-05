@@ -18,16 +18,16 @@ compile: congeal-main-jar
 	-Dscala.usejavacp=true \
 	scala.tools.nsc.Main \
 	-deprecation \
-	-cp congeal-main/target/scala-2.11/congeal-main_2.11-0.0.0.jar \
+	-cp congeal-main/target/scala-2.11/classes \
 	Test1.scala
 
 run: congeal-main-jar
 	java -Xmx256M -Xms32M \
 	-Xbootclasspath/a:$(LIB_PATH) \
-	-cp .:congeal-main/target/scala-2.11/congeal-main_2.11-0.0.0.jar \
+	-cp .:congeal-main/target/scala-2.11/classes \
 	Test
 
-congeal-main-jar: ; sbt package
+congeal-main-jar: ; #sbt package
 
 clean:
 	rm -rf *.class
