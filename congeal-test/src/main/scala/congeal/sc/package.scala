@@ -61,13 +61,16 @@ package object sc {
   private def init() {
     println("init")
     Seq(
-      "/Users/sullivan/.ivy2/cache/org.scala-lang.macro-paradise/scala-reflect/jars/compiler-reflect-2.11.0-SNAPSHOT.jar",
-      "/Users/sullivan/.ivy2/cache/org.scala-lang.macro-paradise/scala-reflect/jars/library-reflect-2.11.0-SNAPSHOT.jar",
-      "/Users/sullivan/.ivy2/cache/org.scala-lang.macro-paradise/scala-reflect/jars/scala-reflect-2.11.0-SNAPSHOT.jar"
+      "/home/johnny/ws/congeal/congeal-main/target/scala-2.11/congeal-main_2.11-0.0.0.jar",
+      "/home/johnny/.ivy2/cache/org.scala-lang.macro-paradise/scala-compiler/jars/scala-compiler-2.11.0-SNAPSHOT.jar",
+      "/home/johnny/.ivy2/cache/org.scala-lang.macro-paradise/scala-actors/jars/scala-actors-2.11.0-SNAPSHOT.jar",
+      "/home/johnny/.ivy2/cache/org.scala-lang.macro-paradise/scala-partest/jars/scala-partest-2.11.0-SNAPSHOT.jar",
+      "/home/johnny/.ivy2/cache/org.scala-lang.macro-paradise/scala-language/jars/scala-language-2.11.0-SNAPSHOT.jar",
+      "/home/johnny/.ivy2/cache/org.scala-lang.macro-paradise/scala-reflect/jars/scala-reflect-2.11.0-SNAPSHOT.jar"
+      // "/Users/sullivan/.ivy2/cache/org.scala-lang.macro-paradise/scala-reflect/jars/scala-reflect-2.11.0-SNAPSHOT.jar"
     ) foreach { path =>
       settings.classpath.append(path)
       settings.bootclasspath.append(path)
-      //settings.toolcp.append(path)
     }
   }
 }

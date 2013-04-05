@@ -1,5 +1,7 @@
-TAGS
-congeal-main/target
-congeal-test/target
-project/target
-target
+/TAGS
+/congeal-main/target
+/congeal-test/target
+/project/target
+/target
+/*.class
+*~
