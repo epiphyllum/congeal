@@ -1,33 +1,20 @@
 
-# /home/johnny/.ivy2/cache/org.scala-lang.macro-paradise/scala-actors/jars/scala-actors-2.11.0-SNAPSHOT.jar
-# /home/johnny/.ivy2/cache/org.scala-lang.macro-paradise/jline/jars/jline-2.11.0-SNAPSHOT.jar
-# /home/johnny/.ivy2/cache/org.scala-lang.macro-paradise/scala-compiler/jars/scala-compiler-2.11.0-SNAPSHOT.jar
-# /home/johnny/.ivy2/cache/org.scala-lang.macro-paradise/scala-library/jars/scala-library-2.11.0-SNAPSHOT.jar
-# /home/johnny/.ivy2/cache/org.scala-lang.macro-paradise/scala-reflect/jars/scala-reflect-2.11.0-SNAPSHOT.jar
-
-LIBS=$(wildcard /home/johnny/.ivy2/cache/org.scala-lang.macro-paradise/*/jars/*-2.11.0-SNAPSHOT.jar)
-empty:=
-space:= $(empty) $(empty)
-LIB_PATH:=$(subst $(space),:,$(LIBS))
-
 test: compile run
 
-compile: congeal-main-jar
-	java -Xmx256M -Xms32M \
-	-Xbootclasspath/a:$(LIB_PATH) \
-	-Dscala.usejavacp=true \
-	scala.tools.nsc.Main \
+compile: congeal-main-classes
+	bin/ivy-scalac \
 	-deprecation \
 	-cp congeal-main/target/scala-2.11/classes \
 	Test1.scala
 
-run: congeal-main-jar
-	java -Xmx256M -Xms32M \
-	-Xbootclasspath/a:$(LIB_PATH) \
+run: congeal-main-classes
+	bin/ivy-scala \
 	-cp .:congeal-main/target/scala-2.11/classes \
 	Test
 
-congeal-main-jar: ; #sbt package
+congeal-main-classes:
+	sbt -J-Xms128m -J-Xmx1g -J-XX:PermSize=64M -J-XX:MaxPermSize=512M "project congeal-main" compile
 
+# FIX: should run sbt clean as well
 clean:
 	rm -rf *.class
