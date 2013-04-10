@@ -1,0 +1,10 @@
+#! /bin/sh
+
+LIBS=/home/johnny/.ivy2/cache/org.scala-lang.macro-paradise/*/jars/*-2.11.0-SNAPSHOT.jar
+LIB_PATH=`echo $LIBS | tr ' ' ':'`
+
+java -Xmx256M -Xms32M \
+-Xbootclasspath/a:$LIB_PATH \
+-Dscala.usejavacp=true \
+scala.tools.nsc.Main \
+$*
