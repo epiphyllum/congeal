@@ -46,7 +46,7 @@ package object sc {
       * and that running the App produces the expected output.
       */
     def producesAppWithOutput(appName: String, expectedOutput: String) {
-      assertEquals("compiling returns zero exit status", 0, compilationResult.exitValue)
+      assertEquals("compiling produces no error", None, compilationResult.errorMessage)
       // FIX: extract AppExecutionResult
       val compilePath = compilationResult.compileDir.getPath
       val command = List(
