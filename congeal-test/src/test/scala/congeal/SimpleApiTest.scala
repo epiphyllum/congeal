@@ -11,24 +11,7 @@ import org.junit.runners.JUnit4
 @RunWith(classOf[JUnit4])
 class SimpleApiTest {
 
-  @Test
-  def simpleApiFailsOnClass() {
-    compilingSourceFailsWithErrorMessage(
-      """|object Test extends App {
-         |  class Foo
-         |  type FooApi = congeal.simpleApi[Foo]
-         |}
-      |""".stripMargin,
-      """|source.scala:3: error: simpleApi[A] only works if A is a trait
-         |  type FooApi = congeal.simpleApi[Foo]
-         |                        ^
-         |one error found
-      |""".stripMargin)
-  }
-
-  // TODO: test  - A must not have non-private inner classes
-  // TODO: test  - A must not have methods that return A
-  // TODO: test  - A must not have methods that have parameters of type A
+  // TODO: tests need to run in parallel
 
   // FIX: should produce "hi from foo\n"!
   @Test

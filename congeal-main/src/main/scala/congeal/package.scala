@@ -19,13 +19,15 @@ package object congeal {
   def simpleApiImpl[T: c.WeakTypeTag](c: Context): c.Tree = {
     import c.universe._
 
-    val typeT: Type = weakTypeOf[T]
-    println("TYPE " + typeT)
+    val t: Type = weakTypeOf[T]
 
-    val typeSymbolT: TypeSymbol = typeT.typeSymbol.asType
-    if (! (typeSymbolT.isClass && typeSymbolT.asClass.isTrait)) {
-      c.error(c.enclosingPosition, "simpleApi[A] only works if A is a trait")
-    }
+    ensureTypeIsTrait(c)(t)
+    ensureNoNonPrivateThisInnerClasses(c)(t)
+    ensureNoSelfReferencingMembers(c)(t)
+
+    // FIX: below is schlock
+
+    val ts: TypeSymbol = t.typeSymbol.asType
 
     // FIX: this gives package name of the macro user. use package of T instead
     val packageName = c.enclosingPackage.pid.toString
@@ -53,6 +55,35 @@ package object congeal {
     c.introduceTopLevel(packageName, clazz)
     val classRef = Select(c.enclosingPackage.pid, className)
     classRef
+  }
+
+  private def ensureTypeIsTrait(c: Context)(t: c.Type) {
+    val ts = t.typeSymbol
+    if (! (ts.isClass && ts.asClass.isTrait)) {
+      c.error(c.enclosingPosition, s"${ts.name} must be a trait in simpleApi[${ts.name}]")
+    }
+  }
+
+  private def ensureNoNonPrivateThisInnerClasses(c: Context)(t: c.Type) {
+    val ts = t.typeSymbol
+    val nonPrivateThisInnerClasses = t.members.filter { symbol =>
+      symbol.isClass && ! (symbol.isPrivate && symbol.privateWithin == ts)
+    }
+    if (nonPrivateThisInnerClasses.nonEmpty) {
+      c.error(c.enclosingPosition, s"${ts.name} must not have non-private[this] inner classes in simpleApi[${ts.name}]")
+    }
+  }
+
+  private def ensureNoSelfReferencingMembers(c: Context)(t: c.Type) {
+    val ts = t.typeSymbol
+    val selfReferencingMembers = t.members.filter { symbol =>
+      (symbol.isMethod || (symbol.isTerm && (symbol.asTerm.isVal || symbol.asTerm.isVar))) &&
+      ! (symbol.isPrivate && symbol.privateWithin == ts) &&
+      symbol.typeSignature.find(_ == t).nonEmpty
+    }
+    if (selfReferencingMembers.nonEmpty) {
+      c.error(c.enclosingPosition, s"${ts.name} must not have self-referencing members in simpleApi[${ts.name}]")
+    }
   }
 
 }

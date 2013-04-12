@@ -13,13 +13,15 @@ class QuickTest {
   trait FooApi { def bar: String }
   trait FooImpl extends Foo with FooApi
 
-
   // 
   @Test
   def testQuick() {
-
     object TestQ {
-      trait Foo { def bar = println("hi from foo") }
+      trait Foo {
+        //trait Bar // should not compile
+        def bar = println("hi from foo")
+        //def bar2: Foo // should not compile
+      }
       val goo = new simpleApi[Foo]
     }
     TestQ.goo.bar

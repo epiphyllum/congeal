@@ -12,9 +12,14 @@ package object sc {
   /** The result of compiling the provided Scala source. */
   def compilingSource(source: String): Compiling = compiling(source)
 
+  /** Asserts that compiling the Scala source succeeds. */
+  def compilingSourceSucceeds(source: String) {
+    compilingSource(source).succeeds()
+  }
+
   /** Asserts that compiling the Scala source fails with the expected error message. */
-  def compilingSourceFailsWithErrorMessage(source: String, expectedErrorMessage: String) {
-    compilingSource(source).failsWithErrorMessage(expectedErrorMessage)
+  def compilingSourceErrorsWithMessage(source: String, expectedErrorMessage: String) {
+    compilingSource(source).errorsWithMessage(expectedErrorMessage)
   }
 
   /** Asserts that compiling the Scala source succeeds, produces a runnable scala.App,
@@ -31,7 +36,7 @@ package object sc {
     lazy val compilationResult = new CompilationResult(source)
 
     /** Asserts that compiling the Scala source fails with the expected error message. */
-    def failsWithErrorMessage(expectedErrorMessage: String) = {
+    def errorsWithMessage(expectedErrorMessage: String) = {
       assertTrue(
         "compiling returns non-zero exit status",
         compilationResult.exitValue != 0)
@@ -42,11 +47,16 @@ package object sc {
       compilationResult.cleanup()
     }
 
+    /** Asserts that compiling the Scala source succeeds. */
+    def succeeds() {
+      assertEquals("compiling produces no error", None, compilationResult.errorMessage)
+    }
+
     /** Asserts that compiling the Scala source succeeds, produces a runnable scala.App,
       * and that running the App produces the expected output.
       */
     def producesAppWithOutput(appName: String, expectedOutput: String) {
-      assertEquals("compiling produces no error", None, compilationResult.errorMessage)
+      succeeds()
       // FIX: extract AppExecutionResult
       val compilePath = compilationResult.compileDir.getPath
       val command = List(
@@ -64,4 +74,5 @@ package object sc {
   }
 
   private def compiling(source: String): Compiling = new Compiling(source)
+
 }
