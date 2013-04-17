@@ -25,36 +25,26 @@ package object congeal {
     ensureNoNonPrivateThisInnerClasses(c)(t)
     ensureNoSelfReferencingMembers(c)(t)
 
-    // FIX: below is schlock
-
     val ts: TypeSymbol = t.typeSymbol.asType
+    val hiddenPackage = Select(Ident(TermName("congeal")), TermName("hidden"))
+    val packageName = hiddenPackage.toString
+    val className = c.freshName(ts.name).toTypeName
 
-    // FIX: this gives package name of the macro user. use package of T instead
-    val packageName = c.enclosingPackage.pid.toString
-    println(s"packageName = $packageName")
+    val body =
+      List(
+        DefDef(
+          Modifiers(), nme.CONSTRUCTOR, List(), List(List()), TypeTree(),
+          Block(List(Apply(Select(Super(This(tpnme.EMPTY), tpnme.EMPTY), nme.CONSTRUCTOR), List())), Literal(Constant(())))),
+        DefDef(
+          Modifiers(), TermName("bar"), List(), List(), TypeTree(),
+          Apply(Select(Ident(definitions.PredefModule), TermName("println")), List(Literal(Constant("hi from the other side"))))))
 
-    // FIX: this gives class name based on the name of the class where the macro is used. use a variation on the name of type T instead
-    val className = c.freshName(c.enclosingImpl.name).toTypeName
-    println(s"className = $className")
-
-    // FIX: in typeT I have a Type
-    // what i need is a Template
-    // Templates have: (parents: List[Universe.Tree], self: Universe.ValDef, body: List[Universe.Tree])
-
-    val Expr(Block(List(ClassDef(_, _, _, Template(parents, self, body))), _)) = reify {
-      class CONTAINER {
-        def bar = println("hi from the other side")
-      }
-    }
-
-    println(s"parents = $parents")
-    println(s"self = $self")
-
-    val clazz = ClassDef(NoMods, className, Nil, Template(parents, self, body))
-
+    val clazz = ClassDef(NoMods, className, Nil, Template(
+      List(Ident(TypeName("AnyRef"))),
+      emptyValDef,
+      body))
     c.introduceTopLevel(packageName, clazz)
-    val classRef = Select(c.enclosingPackage.pid, className)
-    classRef
+    Select(hiddenPackage, className)
   }
 
   private def ensureTypeIsTrait(c: Context)(t: c.Type) {

@@ -16,6 +16,7 @@ class QuickTest {
   // 
   @Test
   def testQuick() {
+    import congeal._
     object TestQ {
       trait Foo {
         //trait Bar // should not compile
