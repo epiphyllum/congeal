@@ -24,12 +24,17 @@ class SimpleApiConstrainsTypeParameterTest {
   }
 
   @Test
-  def simpleApiCompilesOnClass() {
-    compilingSourceSucceeds(
+  def simpleApiDoesNotCompileOnClass() {
+    compilingSourceErrorsWithMessage(
       """|object Test extends App {
          |  class Foo
          |  type FooApi = congeal.simpleApi[Foo]
          |}
+      |""".stripMargin,
+      """|source.scala:3: error: Foo must be a trait in simpleApi[Foo]
+         |  type FooApi = congeal.simpleApi[Foo]
+         |                        ^
+         |one error found
       |""".stripMargin)
   }
 
