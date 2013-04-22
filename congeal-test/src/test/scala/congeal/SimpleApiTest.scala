@@ -13,19 +13,22 @@ class SimpleApiTest {
 
   // TODO: tests need to run in parallel
 
-  // FIX: should produce "hi from foo\n"!
   @Test
   def simpleApiSaysHello() {
     compilingSourceProducesAppWithOutput(
       """|import congeal.simpleApi
          |object Test extends App {
-         |  trait Foo { def bar = println("hi from foo") }
-         |  val goo = new simpleApi[Foo]
-         |  goo.bar
+         |  case class U(uName: String)
+         |  class URepository {
+         |     def getU(uName: String): Option[U] = None // STUB
+         |  }
+         |  class URepositoryImpl extends URepository with simpleApi[URepository]
+         |  val uRepository: simpleApi[URepository] = new URepositoryImpl
+         |  println(uRepository.getU("testUName"))
          |}
       |""".stripMargin,
       "Test",
-      "hi from the other side\n")
+      "None\n")
   }
 
 }
