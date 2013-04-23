@@ -4,7 +4,7 @@ import language.experimental.macros
 import scala.reflect.macros.{ Context, Universe }
 
 /** Contains the implementation for the `simpleApi` type macro. */
-trait SimpleApiImpl {
+trait SimpleApiImpl extends EnsureSimpleType with SymbolPredicates {
 
   // TODO: fix problem of passing around contexts and importing universe
 
@@ -16,55 +16,22 @@ trait SimpleApiImpl {
     import c.universe._
 
     val t: Type = weakTypeOf[T]
-
-    ensureTypeIsTrait(c)(t)
-    ensureNoNonPrivateThisInnerClasses(c)(t)
-    ensureNoSelfReferencingMembers(c)(t)
-
+    ensureSimpleType(c)(t, "simpleApi")
     if (c.hasErrors) {
       Ident(definitions.AnyRefClass)
     }
     else {
-      val hiddenPackage = Select(Ident(TermName("congeal")), TermName("hidden"))
-      val className = createOrLookupSimpleApi(c)(t)
-      Select(hiddenPackage, TypeName(className))
+      simpleApiTree(c)(t)
     }
   }
 
-  private def ensureTypeIsTrait(c: Context)(t: c.Type) {
-    val ts = t.typeSymbol
-    if (! (ts.isClass && ts.asClass.isTrait)) {
-      c.error(c.enclosingPosition, s"${ts.name} must be a trait in simpleApi[${ts.name}]")
-    }
-  }
-
-  private def ensureNoNonPrivateThisInnerClasses(c: Context)(t: c.Type) {
-    val ts = t.typeSymbol
-    val nonPrivateThisInnerClasses = t.members.filter { symbol =>
-      symbol.isClass && ! (symbol.isPrivate && symbol.privateWithin == ts)
-    }
-    if (nonPrivateThisInnerClasses.nonEmpty) {
-      c.error(c.enclosingPosition, s"${ts.name} must not have non-private[this] inner classes in simpleApi[${ts.name}]")
-    }
-  }
-
-  private def ensureNoSelfReferencingMembers(c: Context)(t: c.Type) {
+  /** Produces a tree for the simpleApi of the supplied type t. */
+  protected def simpleApiTree(c: Context)(t: c.Type): c.Tree = {
     import c.universe._
-    val ts = t.typeSymbol
-    def symbolIsValOrVar(s: Symbol) = s.isTerm && (s.asTerm.isVal || s.asTerm.isVar)
-    def symbolIsPrivateThis(s: Symbol) = s.isPrivate && s.privateWithin == ts
-    def symbolHasTypeInSignature(s: Symbol) = s.typeSignature.find(_ == t).nonEmpty
-    val selfReferencingMembers = t.members.filter { s =>
-      (symbolIsNonConstructorMethod(c)(s) || symbolIsValOrVar(s)) &&
-      !symbolIsPrivateThis(s) &&
-      symbolHasTypeInSignature(s)
-    }
-    if (selfReferencingMembers.nonEmpty) {
-      c.error(c.enclosingPosition, s"${ts.name} must not have self-referencing members in simpleApi[${ts.name}]")
-    }
+    val hiddenPackage = Select(Ident(TermName("congeal")), TermName("hidden"))
+    val className = createOrLookupSimpleApi(c)(t)
+    Select(hiddenPackage, TypeName(className))
   }
-
-  private def symbolIsNonConstructorMethod(c: Context)(s: c.Symbol) = s.isMethod && !s.asMethod.isConstructor
 
   private def createOrLookupSimpleApi(c: Context)(t: c.Type): SimpleApiClassName = {
     import c.universe._
@@ -96,6 +63,7 @@ trait SimpleApiImpl {
         }
       }
 
+      // FIX: duplicated in SimpleImplImpl
       def typeTree(t: Type): Tree = {
         t match {
           case TypeRef(pre, sym, args) if args.isEmpty =>

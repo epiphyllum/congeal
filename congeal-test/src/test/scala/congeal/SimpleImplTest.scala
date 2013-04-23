@@ -9,7 +9,7 @@ import org.junit.runners.JUnit4
 
 /** JUnit tests for `congeal.simpleImpl` macro. */
 @RunWith(classOf[JUnit4])
-class SimpleApiTest {
+class SimpleImplTest {
 
   // TODO: tests need to run in parallel
   // TODO: test with protected methods
@@ -18,16 +18,15 @@ class SimpleApiTest {
   // TODO: test with inheritance
 
   @Test
-  def simpleApiSaysHello() {
+  def simpleImplSaysHello() {
     compilingSourceProducesAppWithOutput(
-      """|import congeal.simpleApi
+      """|import congeal._
          |object Test extends App {
          |  case class U(uName: String)
          |  trait URepository {
          |     def getU(uName: String): Option[U] = None // STUB
          |  }
-         |  class URepositoryImpl extends URepository with simpleApi[URepository]
-         |  val uRepository: simpleApi[URepository] = new URepositoryImpl
+         |  val uRepository: simpleApi[URepository] = new simpleImpl[URepository]
          |  println(uRepository.getU("testUName"))
          |}
       |""".stripMargin,
@@ -45,8 +44,7 @@ class SimpleApiTest {
          |  trait URepository {
          |     def getU(uName: String): Option[U] = None // STUB
          |  }
-         |  class URepositoryImpl extends URepository with simpleApi[URepository]
-         |  val uRepository: simpleApi[URepository] = new URepositoryImpl
+         |  val uRepository: simpleApi[URepository] = new simpleImpl[URepository]
          |  println(uRepository.getU("testUName"))
          |}
       |""".stripMargin,

@@ -12,13 +12,8 @@ class QuickTest {
   @Test
   def testQuick() {
     import congeal.simpleApi
-    def a {
-      trait B { def c = "d" }
-      class BImpl extends B with simpleApi[B]
-      val b: simpleApi[B] = new BImpl
-      println(b.c)
-    }
-    a
+    val uRepository: simpleApi[URepository] = new simpleImpl[URepository]
+    println(uRepository.getU("testUName"))
   }
   
 }
