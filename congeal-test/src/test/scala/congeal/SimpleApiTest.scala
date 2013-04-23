@@ -34,7 +34,7 @@ class SimpleApiTest {
   }
 
   @Test
-  def simpleApiSaysHelloNonDefaultPackage() {
+  def simpleApiWorksInNonDefaultPackage() {
     compilingSourceProducesAppWithOutput(
       """|package foo.bar
          |import congeal.simpleApi
@@ -50,6 +50,41 @@ class SimpleApiTest {
       |""".stripMargin,
       "foo.bar.Test",
       "None\n")
+  }
+
+  @Test
+  def simpleApiWorksNestedInTrait() {
+    compilingSourceProducesAppWithOutput(
+      """|import congeal.simpleApi
+         |object Test extends App {
+         |  trait A { trait B { def c = "d" } }
+         |  new A {
+         |    class BImpl extends B with simpleApi[B]
+         |    val b: simpleApi[B] = new BImpl
+         |    println(b.c)
+         |  }
+         |}
+      |""".stripMargin,
+      "Test",
+      "d\n")
+  }
+
+  @Test
+  def simpleApiWorksNestedInMethod() {
+    compilingSourceProducesAppWithOutput(
+      """|import congeal.simpleApi
+         |object Test extends App {
+         |  def a {
+         |    trait B { def c = "d" }
+         |    class BImpl extends B with simpleApi[B]
+         |    val b: simpleApi[B] = new BImpl
+         |    println(b.c)
+         |  }
+         |  a
+         |}
+      |""".stripMargin,
+      "Test",
+      "d\n")
   }
 
 }
