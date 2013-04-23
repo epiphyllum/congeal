@@ -7,21 +7,23 @@ import scala.reflect.macros.{ Context, Universe }
   */
 private[congeal] trait EnsureSimpleType extends SymbolPredicates {
 
-  protected def ensureSimpleType(c: Context)(t: c.Type, macroName: String) {
-    ensureTypeIsTrait(c)(t, macroName)
-    ensureTypeIsStatic(c)(t, macroName)
-    ensureNoNonPrivateThisInnerClasses(c)(t, macroName)
-    ensureNoSelfReferencingMembers(c)(t, macroName)
+  protected val macroName: String
+
+  protected def ensureSimpleType(c: Context)(t: c.Type) {
+    ensureTypeIsTrait(c)(t)
+    ensureTypeIsStatic(c)(t)
+    ensureNoNonPrivateThisInnerClasses(c)(t)
+    ensureNoSelfReferencingMembers(c)(t)
   }
 
-  private def ensureTypeIsTrait(c: Context)(t: c.Type, macroName: String) {
+  private def ensureTypeIsTrait(c: Context)(t: c.Type) {
     val ts = t.typeSymbol
     if (! (ts.isClass && ts.asClass.isTrait)) {
       c.error(c.enclosingPosition, s"${ts.name} must be a trait in $macroName[${ts.name}]")
     }
   }
 
-  private def ensureTypeIsStatic(c: Context)(t: c.Type, macroName: String) {
+  private def ensureTypeIsStatic(c: Context)(t: c.Type) {
     if (!t.typeSymbol.isStatic) {
       // "static" means not a member of a method or trait. only objects all the way up
       val ts = t.typeSymbol
@@ -29,7 +31,7 @@ private[congeal] trait EnsureSimpleType extends SymbolPredicates {
     }
   }
 
-  private def ensureNoNonPrivateThisInnerClasses(c: Context)(t: c.Type, macroName: String) {
+  private def ensureNoNonPrivateThisInnerClasses(c: Context)(t: c.Type) {
     val ts = t.typeSymbol
     val nonPrivateThisInnerClasses = t.members.filter { symbol =>
       symbol.isClass && ! (symbol.isPrivate && symbol.privateWithin == ts)
@@ -39,7 +41,7 @@ private[congeal] trait EnsureSimpleType extends SymbolPredicates {
     }
   }
 
-  private def ensureNoSelfReferencingMembers(c: Context)(t: c.Type, macroName: String) {
+  private def ensureNoSelfReferencingMembers(c: Context)(t: c.Type) {
     import c.universe._
     val ts = t.typeSymbol
     def symbolIsValOrVar(s: Symbol) = s.isTerm && (s.asTerm.isVal || s.asTerm.isVar)
