@@ -15,9 +15,11 @@ Roadmap:
       - no members that have params or return types that derive from A
     - possibly loosen these restrictions later, but for now, just do what I need
       for componentApi and componentImpl
+    - DONE!
   - simpleImpl[A]
     - a simple version of impl[A] - do whatever is possible without looking at AST
     - same initial restrictions as simpleApi[A]
+    - DONE!
   - componentApi[A]
   - componentImpl[A]
   - hasPart

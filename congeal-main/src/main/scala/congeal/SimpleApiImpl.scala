@@ -4,7 +4,7 @@ import language.experimental.macros
 import scala.reflect.macros.{ Context, Universe }
 
 /** Contains the implementation for the `simpleApi` type macro. */
-trait SimpleApiImpl extends EnsureSimpleType with SymbolPredicates {
+private[congeal] object SimpleApiImpl extends EnsureSimpleType with SymbolPredicates {
 
   // TODO: fix problem of passing around contexts and importing universe
 
@@ -26,7 +26,7 @@ trait SimpleApiImpl extends EnsureSimpleType with SymbolPredicates {
   }
 
   /** Produces a tree for the simpleApi of the supplied type t. */
-  protected def simpleApiTree(c: Context)(t: c.Type): c.Tree = {
+  def simpleApiTree(c: Context)(t: c.Type): c.Tree = {
     import c.universe._
     val hiddenPackage = Select(Ident(TermName("congeal")), TermName("hidden"))
     val className = createOrLookupSimpleApi(c)(t)

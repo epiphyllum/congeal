@@ -4,8 +4,9 @@ import language.experimental.macros
 import scala.reflect.macros.{ Context, Universe }
 
 /** Contains the implementation for the `simpleImpl` type macro. */
-trait SimpleImplImpl extends EnsureSimpleType with SymbolPredicates {
-  self: SimpleApiImpl =>
+// FIX: if there is nothing public in the package outside the package object, then i do not get scaladoc for the package object
+//private[congeal]
+object SimpleImplImpl extends EnsureSimpleType with SymbolPredicates {
 
   // TODO: fix problem of passing around contexts and importing universe
 
@@ -67,7 +68,7 @@ trait SimpleImplImpl extends EnsureSimpleType with SymbolPredicates {
       ClassDef(Modifiers(), className, List(), Template(
         List(
           typeTree(t),
-          simpleApiTree(c)(t)),
+          SimpleApiImpl.simpleApiTree(c)(t)),
         emptyValDef,
         List(DefDef(Modifiers(), nme.CONSTRUCTOR, List(), List(List()), TypeTree(),
                     Block(List(Apply(Select(Super(This(tpnme.EMPTY), tpnme.EMPTY), nme.CONSTRUCTOR), List())), Literal(Constant(())))))))

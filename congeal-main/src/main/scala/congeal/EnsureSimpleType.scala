@@ -2,15 +2,10 @@ package congeal
 
 import scala.reflect.macros.{ Context, Universe }
 
-/** Ensures that the type in the macro context is "simple", i.e., meets the
-  * following conditions:
-  * 
-  *   - is a trait
-  *   - is static (i.e., not a member of a method or trait. only objects all the way up.)
-  *   - no non-private[this] inner classes
-  *   - no members that have params or return types that derive from A
+/** Ensures that the type in the macro context is "simple". Produces compiler
+  * errors for any of the ways the type fails to be simple.
   */
-trait EnsureSimpleType extends SymbolPredicates {
+private[congeal] trait EnsureSimpleType extends SymbolPredicates {
 
   protected def ensureSimpleType(c: Context)(t: c.Type, macroName: String) {
     ensureTypeIsTrait(c)(t, macroName)
