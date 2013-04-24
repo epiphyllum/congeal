@@ -39,7 +39,7 @@ class SimpleImplConstrainsTypeParameterTest {
   }
 
   @Test
-  def simpleImplDoesNotCompileOnInsideTrait() {
+  def simpleImplDoesNotCompileOnTraitInsideTrait() {
     compilingSourceErrorsWithMessage(
       """|trait A {
          |  trait Foo
@@ -54,7 +54,7 @@ class SimpleImplConstrainsTypeParameterTest {
   }
 
   @Test
-  def simpleImplDoesNotCompileOnInsideMethod() {
+  def simpleImplDoesNotCompileOnTraitInsideMethod() {
     compilingSourceErrorsWithMessage(
       """|trait T {
          |  def a {

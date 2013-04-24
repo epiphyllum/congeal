@@ -11,9 +11,12 @@ class QuickTest {
 
   @Test
   def testQuick() {
-    import congeal.simpleApi
-    val uRepository: simpleApi[URepository] = new simpleImpl[URepository]
-    println(uRepository.getU("testUName"))
+    import congeal._
+    class URCI extends componentApi[URepository] {
+      override lazy val uRepository = new simpleImpl[URepository]
+    }
+    val urci = new URCI
+    println(urci.uRepository.getU("testUName"))
   }
   
 }

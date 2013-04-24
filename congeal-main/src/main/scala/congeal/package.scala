@@ -24,4 +24,10 @@ package object congeal {
     */
   type simpleImpl[A] = macro SimpleImplImpl.simpleImplImpl[A]
 
+  /** Produces a component API for the supplied type `A`.
+    * $simpleReqs
+    * @tparam A the base type to produce a component API for
+    */
+  type componentApi[A] = macro ComponentApiImpl.componentApiImpl[A]
+
 }

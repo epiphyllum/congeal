@@ -19,3 +19,29 @@ trait TRepository {
 trait URepository {
   def getU(uName: String): Option[U] = None // STUB
 }
+
+trait SRComponentApi {
+  def sr: SRApi
+  trait SRApi {
+    def getS(sName: String): Option[S]
+  }
+}
+
+trait TRComponentApi {
+  def tr: TRApi
+  trait TRApi {
+    def getT(tName: String): Option[T]
+  }
+}
+
+trait URComponentApi {
+  def ur: URApi
+  trait URApi {
+    def getU(uName: String): Option[U]
+  }
+}
+
+trait RootComponentApi extends
+  SRComponentApi with
+  TRComponentApi with
+  URComponentApi

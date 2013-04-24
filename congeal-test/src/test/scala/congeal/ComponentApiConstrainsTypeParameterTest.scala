@@ -7,130 +7,130 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 
-/** JUnit tests to make sure the `congeal.simpleApi` macro constrains its type parameter as
+/** JUnit tests to make sure the `congeal.componentApi` macro constrains its type parameter as
   * expected by rejecting (emitting error on) type parameters that do not match constraints.
   */
 @RunWith(classOf[JUnit4])
-class SimpleApiConstrainsTypeParameterTest {
+class ComponentApiConstrainsTypeParameterTest {
 
   @Test
-  def simpleApiCompilesOnTrait() {
+  def componentApiCompilesOnTrait() {
     compilingSourceSucceeds(
       """|object Test extends App {
          |  trait Foo
-         |  type FooApi = congeal.simpleApi[Foo]
+         |  type FooApi = congeal.componentApi[Foo]
          |}
       |""".stripMargin)
   }
 
   @Test
-  def simpleApiDoesNotCompileOnClass() {
+  def componentApiDoesNotCompileOnClass() {
     compilingSourceErrorsWithMessage(
       """|object Test extends App {
          |  class Foo
-         |  type FooApi = congeal.simpleApi[Foo]
+         |  type FooApi = congeal.componentApi[Foo]
          |}
       |""".stripMargin,
-      """|source.scala:3: error: Foo must be a trait in simpleApi[Foo]
-         |  type FooApi = congeal.simpleApi[Foo]
+      """|source.scala:3: error: Foo must be a trait in componentApi[Foo]
+         |  type FooApi = congeal.componentApi[Foo]
          |                        ^
          |one error found
       |""".stripMargin)
   }
 
   @Test
-  def simpleApiDoesNotCompileOnTraitInsideTrait() {
+  def componentApiDoesNotCompileOnTraitInsideTrait() {
     compilingSourceErrorsWithMessage(
       """|trait A {
          |  trait Foo
-         |  type FooApi = congeal.simpleApi[Foo]
+         |  type FooApi = congeal.componentApi[Foo]
          |}
       |""".stripMargin,
-      """|source.scala:3: error: Foo must be static in simpleApi[Foo]
-         |  type FooApi = congeal.simpleApi[Foo]
+      """|source.scala:3: error: Foo must be static in componentApi[Foo]
+         |  type FooApi = congeal.componentApi[Foo]
          |                        ^
          |one error found
       |""".stripMargin)
   }
 
   @Test
-  def simpleApiDoesNotCompileOnTraitInsideMethod() {
+  def componentApiDoesNotCompileOnTraitInsideMethod() {
     compilingSourceErrorsWithMessage(
       """|trait T {
          |  def a {
          |    trait Foo
-         |    type FooApi = congeal.simpleApi[Foo]
+         |    type FooApi = congeal.componentApi[Foo]
          |  }
          |}
       |""".stripMargin,
-      """|source.scala:4: error: Foo must be static in simpleApi[Foo]
-         |    type FooApi = congeal.simpleApi[Foo]
+      """|source.scala:4: error: Foo must be static in componentApi[Foo]
+         |    type FooApi = congeal.componentApi[Foo]
          |                          ^
          |one error found
       |""".stripMargin)
   }
 
   @Test
-  def simpleApiDoesNotCompileOnTraitWithNonPrivateThisInnerClasses() {
+  def componentApiDoesNotCompileOnTraitWithNonPrivateThisInnerClasses() {
     compilingSourceErrorsWithMessage(
       """|object Test extends App {
          |  trait Foo { trait Bar }
-         |  type FooApi = congeal.simpleApi[Foo]
+         |  type FooApi = congeal.componentApi[Foo]
          |}
       |""".stripMargin,
-      """|source.scala:3: error: Foo must not have non-private[this] inner classes in simpleApi[Foo]
-         |  type FooApi = congeal.simpleApi[Foo]
+      """|source.scala:3: error: Foo must not have non-private[this] inner classes in componentApi[Foo]
+         |  type FooApi = congeal.componentApi[Foo]
          |                        ^
          |one error found
       |""".stripMargin)
   }
 
   val selfReferencingMemberErrorMessage =
-    """|source.scala:3: error: Foo must not have self-referencing members in simpleApi[Foo]
-       |  type FooApi = congeal.simpleApi[Foo]
+    """|source.scala:3: error: Foo must not have self-referencing members in componentApi[Foo]
+       |  type FooApi = congeal.componentApi[Foo]
        |                        ^
        |one error found
     |""".stripMargin
 
   @Test
-  def simpleApiDoesNotCompileOnTraitWithSelfReferencingMembers1() {
+  def componentApiDoesNotCompileOnTraitWithSelfReferencingMembers1() {
     compilingSourceErrorsWithMessage(
       """|object Test extends App {
          |  trait Foo { def bar: Foo }
-         |  type FooApi = congeal.simpleApi[Foo]
+         |  type FooApi = congeal.componentApi[Foo]
          |}
       |""".stripMargin,
       selfReferencingMemberErrorMessage)
   }
 
   @Test
-  def simpleApiDoesNotCompileOnTraitWithSelfReferencingMembers2() {
+  def componentApiDoesNotCompileOnTraitWithSelfReferencingMembers2() {
     compilingSourceErrorsWithMessage(
       """|object Test extends App {
          |  trait Foo { def bar(f: Foo): Unit }
-         |  type FooApi = congeal.simpleApi[Foo]
+         |  type FooApi = congeal.componentApi[Foo]
          |}
       |""".stripMargin,
       selfReferencingMemberErrorMessage)
   }
 
   @Test
-  def simpleApiDoesNotCompileOnTraitWithSelfReferencingMembers3() {
+  def componentApiDoesNotCompileOnTraitWithSelfReferencingMembers3() {
     compilingSourceErrorsWithMessage(
       """|object Test extends App {
          |  trait Foo { val bar: Foo = null }
-         |  type FooApi = congeal.simpleApi[Foo]
+         |  type FooApi = congeal.componentApi[Foo]
          |}
       |""".stripMargin,
       selfReferencingMemberErrorMessage)
   }
 
   @Test
-  def simpleApiDoesNotCompileOnTraitWithSelfReferencingMembers4() {
+  def componentApiDoesNotCompileOnTraitWithSelfReferencingMembers4() {
     compilingSourceErrorsWithMessage(
       """|object Test extends App {
          |  trait Foo { var bar: Foo = null }
-         |  type FooApi = congeal.simpleApi[Foo]
+         |  type FooApi = congeal.componentApi[Foo]
          |}
       |""".stripMargin,
       selfReferencingMemberErrorMessage)

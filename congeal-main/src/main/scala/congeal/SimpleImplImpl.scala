@@ -4,7 +4,7 @@ import language.experimental.macros
 import scala.reflect.macros.{ Context, Universe }
 
 /** Contains the implementation for the `simpleImpl` type macro. */
-private[congeal] object SimpleImplImpl extends CachingMacroImpl {
+private[congeal] object SimpleImplImpl extends MacroImpl {
 
   /** Provides implementation of type macro `congeal.simpleImpl`. */
   def simpleImplImpl[T: c.WeakTypeTag](c: Context): c.Tree = impl[T](c)
