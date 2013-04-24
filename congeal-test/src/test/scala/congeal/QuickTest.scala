@@ -12,10 +12,7 @@ class QuickTest {
   @Test
   def testQuick() {
     import congeal._
-    class URCI extends componentApi[URepository] {
-      override lazy val uRepository = new simpleImpl[URepository]
-    }
-    val urci = new URCI
+    val urci: componentApi[URepository] = new componentImpl[URepository] {}
     println(urci.uRepository.getU("testUName"))
   }
   

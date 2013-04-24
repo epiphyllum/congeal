@@ -4,19 +4,19 @@ The general idea of the type macros I want to implement here is described in my
 blog post [Taming the Cake Pattern with Type
 Macros](http://scabl.blogspot.com/2013/03/cbdi-2.html).
 
-I'm just getting started here, as you can probably see.
-
-Roadmap:
+Macros completed so far:
   - simpleApi[A]
-    - DONE!
   - simpleImpl[A]
-    - DONE!
   - componentApi[A]
-    - DONE!
   - componentImpl[A]
-  - hasPart
-  - hasDependency
-  - hasPrivatePart
-  - mock
-  - api[A] - requires AST (or proxies)
-  - impl[A] - requires AST (or proxies)
+
+Macros still to do:
+  - hasPart[A]
+  - hasDependency[A]
+  - hasPrivatePart[A]
+  - mock[A]
+
+Other TODO items:
+  - basic documentation
+  - use AST and/or proxies to remove restrictions on the classes that can be congealed
+  - create another project in the build called congeal-examples

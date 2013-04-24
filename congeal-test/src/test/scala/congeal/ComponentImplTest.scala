@@ -7,12 +7,12 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 
-/** JUnit tests for `congeal.componentApi` macro. */
+/** JUnit tests for `congeal.componentImpl` macro. */
 @RunWith(classOf[JUnit4])
-class ComponentApiTest {
+class ComponentImplTest {
 
   @Test
-  def componentApiSaysHello() {
+  def componentImplSaysHello() {
     compilingSourceProducesAppWithOutput(
       """|import congeal._
          |object Test extends App {
@@ -20,10 +20,7 @@ class ComponentApiTest {
          |  trait URepository {
          |     def getU(uName: String): Option[U] = None // STUB
          |  }
-         |  class URepositoryComponentImpl extends componentApi[URepository] {
-         |    override lazy val uRepository = new simpleImpl[URepository]
-         |  }
-         |  val uRepositoryComponent: componentApi[URepository] = new URepositoryComponentImpl
+         |  val uRepositoryComponent: componentApi[URepository] = new componentImpl[URepository] {}
          |  println(uRepositoryComponent.uRepository.getU("testUName"))
          |}
       |""".stripMargin,
@@ -44,7 +41,7 @@ class ComponentApiTest {
          |  class URepositoryComponentImpl extends componentApi[URepository] {
          |    override lazy val uRepository = new simpleImpl[URepository]
          |  }
-         |  val uRepositoryComponent: componentApi[URepository] = new URepositoryComponentImpl
+         |  val uRepositoryComponent: componentApi[URepository] = new componentImpl[URepository] {}
          |  println(uRepositoryComponent.uRepository.getU("testUName"))
          |}
       |""".stripMargin,

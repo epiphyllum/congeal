@@ -6,12 +6,6 @@ import scala.reflect.macros.{ Context, Universe }
 /** Contains the implementation for the `simpleApi` type macro. */
 private[congeal] object SimpleApiImpl extends MacroImpl {
 
-  /** Provides implementation of type macro `congeal.simpleApi`. */
-  def simpleApiImpl[T: c.WeakTypeTag](c: Context): c.Tree = impl[T](c)
-
-  /** Produces a tree for the simpleApi of the supplied type t. */
-  def simpleApiTree(c: Context)(t: c.Type): c.Tree = implTree(c)(t)
-
   override protected val macroName = "simpleApi"
 
   override protected def createClassDef(c: Context)(t: c.Type, implClassName: c.TypeName): c.universe.ClassDef = {
@@ -31,24 +25,12 @@ private[congeal] object SimpleApiImpl extends MacroImpl {
         }
       }
 
-      // FIX: duplicated in SimpleImplImpl
-      def typeTree(t: Type): Tree = {
-        t match {
-          case TypeRef(pre, sym, args) if args.isEmpty =>
-            Select(Ident(pre.termSymbol), sym.name)
-          case TypeRef(pre, sym, args) if args.nonEmpty =>
-            AppliedTypeTree(
-              typeTree(TypeRef(pre, sym, Nil)),
-              args map { a => typeTree(a) })
-        }
-      }
-
       DefDef(
         Modifiers(Flag.DEFERRED), // FIX: match protected/public/whatever of copied method
         s.name,
         tparams,
         paramss,
-        typeTree(method.returnType),
+        typeTree(c)(method.returnType),
         EmptyTree)
     }
 
