@@ -5,8 +5,8 @@ blog post [Taming the Cake Pattern with Type
 Macros](http://scabl.blogspot.com/2013/03/cbdi-2.html).
 
 Macros completed so far:
-  - simpleApi[A]
-  - simpleImpl[A]
+  - api[A]
+  - impl[A]
   - componentApi[A]
   - componentImpl[A]
 
@@ -20,3 +20,4 @@ Other TODO items:
   - basic documentation
   - use AST and/or proxies to remove restrictions on the classes that can be congealed
   - create another project in the build called congeal-examples
+  - cull TODO and FIX comments from the code

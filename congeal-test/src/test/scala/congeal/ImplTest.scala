@@ -7,9 +7,9 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 
-/** JUnit tests for `congeal.simpleImpl` macro. */
+/** JUnit tests for `congeal.impl` macro. */
 @RunWith(classOf[JUnit4])
-class SimpleApiTest {
+class ImplTest {
 
   // TODO: tests need to run in parallel
   // TODO: test with protected methods
@@ -18,16 +18,15 @@ class SimpleApiTest {
   // TODO: test with inheritance
 
   @Test
-  def simpleApiSaysHello() {
+  def implSaysHello() {
     compilingSourceProducesAppWithOutput(
-      """|import congeal.simpleApi
+      """|import congeal._
          |object Test extends App {
          |  case class U(uName: String)
          |  trait URepository {
          |     def getU(uName: String): Option[U] = None // STUB
          |  }
-         |  class URepositoryImpl extends URepository with simpleApi[URepository]
-         |  val uRepository: simpleApi[URepository] = new URepositoryImpl
+         |  val uRepository: api[URepository] = new impl[URepository]
          |  println(uRepository.getU("testUName"))
          |}
       |""".stripMargin,
@@ -36,7 +35,7 @@ class SimpleApiTest {
   }
 
   @Test
-  def simpleImplWorksInNonDefaultPackage() {
+  def implWorksInNonDefaultPackage() {
     compilingSourceProducesAppWithOutput(
       """|package foo.bar
          |import congeal._
@@ -45,8 +44,7 @@ class SimpleApiTest {
          |  trait URepository {
          |     def getU(uName: String): Option[U] = None // STUB
          |  }
-         |  class URepositoryImpl extends URepository with simpleApi[URepository]
-         |  val uRepository: simpleApi[URepository] = new URepositoryImpl
+         |  val uRepository: api[URepository] = new impl[URepository]
          |  println(uRepository.getU("testUName"))
          |}
       |""".stripMargin,

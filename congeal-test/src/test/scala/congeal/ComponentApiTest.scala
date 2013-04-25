@@ -21,7 +21,7 @@ class ComponentApiTest {
          |     def getU(uName: String): Option[U] = None // STUB
          |  }
          |  class URepositoryComponentImpl extends componentApi[URepository] {
-         |    override lazy val uRepository = new simpleImpl[URepository]
+         |    override lazy val uRepository = new impl[URepository]
          |  }
          |  val uRepositoryComponent: componentApi[URepository] = new URepositoryComponentImpl
          |  println(uRepositoryComponent.uRepository.getU("testUName"))
@@ -42,7 +42,7 @@ class ComponentApiTest {
          |     def getU(uName: String): Option[U] = None // STUB
          |  }
          |  class URepositoryComponentImpl extends componentApi[URepository] {
-         |    override lazy val uRepository = new simpleImpl[URepository]
+         |    override lazy val uRepository = new impl[URepository]
          |  }
          |  val uRepositoryComponent: componentApi[URepository] = new URepositoryComponentImpl
          |  println(uRepositoryComponent.uRepository.getU("testUName"))

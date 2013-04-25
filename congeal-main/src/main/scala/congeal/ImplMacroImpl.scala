@@ -4,9 +4,9 @@ import language.experimental.macros
 import scala.reflect.macros.{ Context, Universe }
 
 /** Contains the implementation for the `simpleImpl` type macro. */
-private[congeal] object SimpleImplImpl extends MacroImpl {
+private[congeal] object ImplMacroImpl extends MacroImpl {
 
-  override protected val macroName = "simpleImpl"
+  override protected val macroName = "impl"
 
   override protected def createClassDef(c: Context)(t: c.Type, implClassName: c.TypeName): c.universe.ClassDef = {
     import c.universe._
@@ -15,7 +15,7 @@ private[congeal] object SimpleImplImpl extends MacroImpl {
     ClassDef(Modifiers(), implClassName, List(), Template(
       List(
         typeTree(c)(t),
-        SimpleApiImpl.simpleImpl(c)(t)),
+        ApiMacroImpl.simpleImpl(c)(t)),
       emptyValDef,
       List(DefDef(Modifiers(), nme.CONSTRUCTOR, List(), List(List()), TypeTree(),
                   Block(List(Apply(Select(Super(This(tpnme.EMPTY), tpnme.EMPTY), nme.CONSTRUCTOR), List())), Literal(Constant(())))))))

@@ -16,24 +16,24 @@ package object congeal {
     * $simpleReqs
     * @tparam A the base type to produce an API for
     */
-  type simpleApi[A] = macro SimpleApiImpl.impl[A]
+  type api[A] = macro ApiMacroImpl.impl[A]
 
   /** Produces a default implementation for the supplied type `A`.
     * $simpleReqs
     * @tparam A the base type to produce an implementation for
     */
-  type simpleImpl[A] = macro SimpleImplImpl.impl[A]
+  type impl[A] = macro ImplMacroImpl.impl[A]
 
   /** Produces a component API for the supplied type `A`.
     * $simpleReqs
     * @tparam A the base type to produce a component API for
     */
-  type componentApi[A] = macro ComponentApiImpl.impl[A]
+  type componentApi[A] = macro ComponentApiMacroImpl.impl[A]
 
   /** Produces a component implementation for the supplied type `A`.
     * $simpleReqs
     * @tparam A the base type to produce a component API for
     */
-  type componentImpl[A] = macro ComponentImplImpl.impl[A]
+  type componentImpl[A] = macro ComponentImplMacroImpl.impl[A]
 
 }

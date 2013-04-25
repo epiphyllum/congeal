@@ -4,9 +4,9 @@ import language.experimental.macros
 import scala.reflect.macros.{ Context, Universe }
 
 /** Contains the implementation for the `simpleApi` type macro. */
-private[congeal] object SimpleApiImpl extends MacroImpl {
+private[congeal] object ApiMacroImpl extends MacroImpl {
 
-  override protected val macroName = "simpleApi"
+  override protected val macroName = "api"
 
   override protected def createClassDef(c: Context)(t: c.Type, implClassName: c.TypeName): c.universe.ClassDef = {
     import c.universe._

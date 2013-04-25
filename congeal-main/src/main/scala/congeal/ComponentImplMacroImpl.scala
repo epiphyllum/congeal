@@ -3,10 +3,8 @@ package congeal
 import language.experimental.macros
 import scala.reflect.macros.{ Context, Universe }
 
-trait T { def u = "v" }
-
 /** Contains the implementation for the `componentImpl` type macro. */
-private[congeal] object ComponentImplImpl extends MacroImpl {
+private[congeal] object ComponentImplMacroImpl extends MacroImpl {
 
   override protected val macroName = "componentImpl"
 
@@ -22,7 +20,7 @@ private[congeal] object ComponentImplImpl extends MacroImpl {
       implClassName,
       List(),
       Template(
-        List(ComponentApiImpl.simpleImpl(c)(t)),
+        List(ComponentApiMacroImpl.simpleImpl(c)(t)),
         emptyValDef,
         List(
           DefDef(Modifiers(), TermName("$init$"), List(), List(List()), TypeTree(), Block(List(), Literal(Constant(())))),
@@ -37,7 +35,7 @@ private[congeal] object ComponentImplImpl extends MacroImpl {
                   TypeName("$anon"),
                   List(),
                   Template(
-                    List(SimpleImplImpl.simpleImpl(c)(t)),
+                    List(ImplMacroImpl.simpleImpl(c)(t)),
                     emptyValDef,
                     List(
                       // def this() { super() }
