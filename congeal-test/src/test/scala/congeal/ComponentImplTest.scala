@@ -49,4 +49,22 @@ class ComponentImplTest {
       "None\n")
   }
 
+  @Test
+  def componentImplDoesNotProvideInjectionForEmptyTrait() {
+    compilingSourceErrorsWithMessage(
+      """|import congeal._
+         |object Test extends App {
+         |  trait Foo {}
+         |  trait Bar extends componentImpl[Foo] {
+         |    println(foo)
+         |  }
+         |}
+      |""".stripMargin,
+      """|source.scala:5: error: not found: value foo
+         |    println(foo)
+         |            ^
+         |one error found
+      |""".stripMargin)
+  }
+
 }

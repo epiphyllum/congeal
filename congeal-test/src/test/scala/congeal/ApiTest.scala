@@ -36,7 +36,7 @@ class ApiTest {
   }
 
   @Test
-  def simpleImplWorksInNonDefaultPackage() {
+  def apiWorksInNonDefaultPackage() {
     compilingSourceProducesAppWithOutput(
       """|package foo.bar
          |import congeal._

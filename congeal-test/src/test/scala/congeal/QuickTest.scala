@@ -11,12 +11,13 @@ class QuickTest {
 
   @Test
   def testQuick() {
-    import congeal._
-    trait UService extends hasDependency[URepository] {
-      def getU(uName: String): Option[U] = uRepository.getU(uName)
-    }
-    val uService = new UService  with componentImpl[URepository]
-    println(uService.getU("testUName"))
+//    import congeal._
+
+    //trait Root extends hasPart[URepository] with hasPart[UService]
+    //trait RootComponentApi extends componentApi[URepository] with componentApi[UService]
+    //trait RootComponentImpl extends componentImpl[URepository] with componentImpl[UService]
+    //println(uService.getU("testUName"))
+
   }
   
 }

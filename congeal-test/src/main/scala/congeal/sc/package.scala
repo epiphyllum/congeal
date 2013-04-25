@@ -37,13 +37,13 @@ package object sc {
 
     /** Asserts that compiling the Scala source fails with the expected error message. */
     def errorsWithMessage(expectedErrorMessage: String) = {
+      assertTrue(
+        s"compilation succeeded when expected to fail with error message:\n$expectedErrorMessage",
+        compilationResult.exitValue != 0)
       assertEquals(
         "compiling fails with error message\n",
         expectedErrorMessage,
         compilationResult.errorMessage.get)
-      assertTrue(
-        "compiling returns non-zero exit status",
-        compilationResult.exitValue != 0)
       compilationResult.cleanup()
     }
 

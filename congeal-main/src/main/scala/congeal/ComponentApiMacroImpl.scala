@@ -11,18 +11,26 @@ private[congeal] object ComponentApiMacroImpl extends MacroImpl {
   override protected def createClassDef(c: Context)(t: c.Type, implClassName: c.TypeName): c.universe.ClassDef = {
     import c.universe._
 
-    // trait componentApi[T] { val t: api[T] }
-    val valName = TermName(uncapitalize(t.typeSymbol.name.toString))
+    val body = if (t.declarations.filter(symbolIsNonConstructorMethod(c)(_)).isEmpty) {
+      List()
+    }
+    else {
+      // val t: api[T]
+      val valName = TermName(uncapitalize(t.typeSymbol.name.toString))
+      List(DefDef(Modifiers(Flag.DEFERRED),
+                  valName,
+                  List(),
+                  List(),
+                  ApiMacroImpl.simpleImpl(c)(t),
+                  EmptyTree))
+    }
+
+    // trait componentApi[T] { <body> }
     ClassDef(
       Modifiers(Flag.ABSTRACT | Flag.INTERFACE | Flag.DEFAULTPARAM), implClassName, List(),
       Template(List(Ident(TypeName("AnyRef"))),
                emptyValDef,
-               List(DefDef(Modifiers(Flag.DEFERRED),
-                           valName,
-                           List(),
-                           List(),
-                           ApiMacroImpl.simpleImpl(c)(t),
-                           EmptyTree))))
+               body))
   }
 
   // TODO: this could use some work

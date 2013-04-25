@@ -17,6 +17,7 @@ Macros still to do:
   - mock[A]
 
 Other TODO items:
+  - modify componentApi and componentImpl to generate inner classes for the api and the impl
   - basic documentation
   - create another project in the build called congeal-examples
   - cull TODO and FIX comments from the code
