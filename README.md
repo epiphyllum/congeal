@@ -11,13 +11,13 @@ Macros completed so far:
   - componentImpl[A]
 
 Macros still to do:
-  - hasPart[A]
   - hasDependency[A]
+  - hasPart[A]
   - hasPrivatePart[A]
   - mock[A]
 
 Other TODO items:
   - basic documentation
-  - use AST and/or proxies to remove restrictions on the classes that can be congealed
   - create another project in the build called congeal-examples
   - cull TODO and FIX comments from the code
+  - use AST and/or proxies to remove restrictions on the classes that can be congealed
