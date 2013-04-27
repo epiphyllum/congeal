@@ -1,4 +1,4 @@
-package congeal
+package congeal.simple
 
 import congeal.sc._
 
@@ -7,130 +7,130 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 
-/** JUnit tests to make sure the `congeal.componentApi` macro constrains its type parameter as
+/** JUnit tests to make sure the `congeal.hasPart` macro constrains its type parameter as
   * expected by rejecting (emitting error on) type parameters that do not match constraints.
   */
 @RunWith(classOf[JUnit4])
-class ComponentApiConstrainsTypeParameterTest {
+class HasPartConstrainsTypeParameterTest {
 
   @Test
-  def componentApiCompilesOnTrait() {
+  def hasPartCompilesOnTrait() {
     compilingSourceSucceeds(
       """|object Test extends App {
          |  trait Foo
-         |  type FooApi = congeal.componentApi[Foo]
+         |  type FooHasPart = congeal.hasPart[Foo]
          |}
       |""".stripMargin)
   }
 
   @Test
-  def componentApiDoesNotCompileOnClass() {
+  def hasPartDoesNotCompileOnClass() {
     compilingSourceErrorsWithMessage(
       """|object Test extends App {
          |  class Foo
-         |  type FooApi = congeal.componentApi[Foo]
+         |  type FooHasPart = congeal.hasPart[Foo]
          |}
       |""".stripMargin,
-      """|source.scala:3: error: Foo must be a trait in componentApi[Foo]
-         |  type FooApi = congeal.componentApi[Foo]
-         |                        ^
+      """|source.scala:3: error: Foo must be a trait in hasPart[Foo]
+         |  type FooHasPart = congeal.hasPart[Foo]
+         |                            ^
          |one error found
       |""".stripMargin)
   }
 
   @Test
-  def componentApiDoesNotCompileOnTraitInsideTrait() {
+  def hasPartDoesNotCompileOnTraitInsideTrait() {
     compilingSourceErrorsWithMessage(
       """|trait A {
          |  trait Foo
-         |  type FooApi = congeal.componentApi[Foo]
+         |  type FooHasPart = congeal.hasPart[Foo]
          |}
       |""".stripMargin,
-      """|source.scala:3: error: Foo must be static in componentApi[Foo]
-         |  type FooApi = congeal.componentApi[Foo]
-         |                        ^
+      """|source.scala:3: error: Foo must be static in hasPart[Foo]
+         |  type FooHasPart = congeal.hasPart[Foo]
+         |                            ^
          |one error found
       |""".stripMargin)
   }
 
   @Test
-  def componentApiDoesNotCompileOnTraitInsideMethod() {
+  def hasPartDoesNotCompileOnTraitInsideMethod() {
     compilingSourceErrorsWithMessage(
       """|trait T {
          |  def a {
          |    trait Foo
-         |    type FooApi = congeal.componentApi[Foo]
+         |    type FooHasPart = congeal.hasPart[Foo]
          |  }
          |}
       |""".stripMargin,
-      """|source.scala:4: error: Foo must be static in componentApi[Foo]
-         |    type FooApi = congeal.componentApi[Foo]
-         |                          ^
+      """|source.scala:4: error: Foo must be static in hasPart[Foo]
+         |    type FooHasPart = congeal.hasPart[Foo]
+         |                              ^
          |one error found
       |""".stripMargin)
   }
 
   @Test
-  def componentApiDoesNotCompileOnTraitWithNonPrivateThisInnerClasses() {
+  def hasPartDoesNotCompileOnTraitWithNonPrivateThisInnerClasses() {
     compilingSourceErrorsWithMessage(
       """|object Test extends App {
          |  trait Foo { trait Bar }
-         |  type FooApi = congeal.componentApi[Foo]
+         |  type FooHasPart = congeal.hasPart[Foo]
          |}
       |""".stripMargin,
-      """|source.scala:3: error: Foo must not have non-private[this] inner classes in componentApi[Foo]
-         |  type FooApi = congeal.componentApi[Foo]
-         |                        ^
+      """|source.scala:3: error: Foo must not have non-private[this] inner classes in hasPart[Foo]
+         |  type FooHasPart = congeal.hasPart[Foo]
+         |                            ^
          |one error found
       |""".stripMargin)
   }
 
   val selfReferencingMemberErrorMessage =
-    """|source.scala:3: error: Foo must not have self-referencing members in componentApi[Foo]
-       |  type FooApi = congeal.componentApi[Foo]
-       |                        ^
+    """|source.scala:3: error: Foo must not have self-referencing members in hasPart[Foo]
+       |  type FooHasPart = congeal.hasPart[Foo]
+       |                            ^
        |one error found
     |""".stripMargin
 
   @Test
-  def componentApiDoesNotCompileOnTraitWithSelfReferencingMembers1() {
+  def hasPartDoesNotCompileOnTraitWithSelfReferencingMembers1() {
     compilingSourceErrorsWithMessage(
       """|object Test extends App {
          |  trait Foo { def bar: Foo }
-         |  type FooApi = congeal.componentApi[Foo]
+         |  type FooHasPart = congeal.hasPart[Foo]
          |}
       |""".stripMargin,
       selfReferencingMemberErrorMessage)
   }
 
   @Test
-  def componentApiDoesNotCompileOnTraitWithSelfReferencingMembers2() {
+  def hasPartDoesNotCompileOnTraitWithSelfReferencingMembers2() {
     compilingSourceErrorsWithMessage(
       """|object Test extends App {
          |  trait Foo { def bar(f: Foo): Unit }
-         |  type FooApi = congeal.componentApi[Foo]
+         |  type FooHasPart = congeal.hasPart[Foo]
          |}
       |""".stripMargin,
       selfReferencingMemberErrorMessage)
   }
 
   @Test
-  def componentApiDoesNotCompileOnTraitWithSelfReferencingMembers3() {
+  def hasPartDoesNotCompileOnTraitWithSelfReferencingMembers3() {
     compilingSourceErrorsWithMessage(
       """|object Test extends App {
          |  trait Foo { val bar: Foo = null }
-         |  type FooApi = congeal.componentApi[Foo]
+         |  type FooHasPart = congeal.hasPart[Foo]
          |}
       |""".stripMargin,
       selfReferencingMemberErrorMessage)
   }
 
   @Test
-  def componentApiDoesNotCompileOnTraitWithSelfReferencingMembers4() {
+  def hasPartDoesNotCompileOnTraitWithSelfReferencingMembers4() {
     compilingSourceErrorsWithMessage(
       """|object Test extends App {
          |  trait Foo { var bar: Foo = null }
-         |  type FooApi = congeal.componentApi[Foo]
+         |  type FooHasPart = congeal.hasPart[Foo]
          |}
       |""".stripMargin,
       selfReferencingMemberErrorMessage)

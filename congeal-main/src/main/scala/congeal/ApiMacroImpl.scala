@@ -3,12 +3,12 @@ package congeal
 import language.experimental.macros
 import scala.reflect.macros.{ Context, Universe }
 
-/** Contains the implementation for the `simpleApi` type macro. */
+/** Contains the implementation for the `api` type macro. */
 private[congeal] object ApiMacroImpl extends MacroImpl {
 
   override protected val macroName = "api"
 
-  override protected def createClassDef(c: Context)(t: c.Type, implClassName: c.TypeName): c.universe.ClassDef = {
+  override def classDef(c: Context)(t: c.Type, implClassName: c.TypeName): c.universe.ClassDef = {
     import c.universe._
     val internalSymbolTable = c.universe.asInstanceOf[scala.reflect.internal.SymbolTable]
 
@@ -34,9 +34,13 @@ private[congeal] object ApiMacroImpl extends MacroImpl {
         EmptyTree)
     }
 
-    ClassDef(Modifiers(Flag.ABSTRACT | Flag.TRAIT), implClassName, Nil, Template(
-      List(Ident(TypeName("AnyRef"))),
-      emptyValDef,
-      body.toList))
+    ClassDef(
+      Modifiers(Flag.ABSTRACT | Flag.TRAIT),
+      implClassName,
+      Nil,
+      Template(
+        List(Ident(TypeName("AnyRef"))),
+        emptyValDef,
+        body.toList))
   }
 }

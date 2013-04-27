@@ -8,8 +8,26 @@ private[congeal] object ComponentApiMacroImpl extends MacroImpl {
 
   override protected val macroName = "componentApi"
 
-  override protected def createClassDef(c: Context)(t: c.Type, implClassName: c.TypeName): c.universe.ClassDef = {
+  override def classDef(c: Context)(t: c.Type, implClassName: c.TypeName): c.universe.ClassDef = {
     import c.universe._
+
+    // FIX: supers code here is duplicated (with mods) in ComponentImplMacroImpl
+    val internalSymbolTable = c.universe.asInstanceOf[scala.reflect.internal.SymbolTable]
+
+    def hasPartParents(tt: internalSymbolTable.Type): List[String] = {
+      if (tt.typeSymbol.fullName.startsWith("congeal.hidden.hasPartOf"))
+        tt.typeSymbol.name.toString :: (tt.parents flatMap hasPartParents)
+      else
+        tt.parents flatMap hasPartParents
+    }
+
+    val supers =
+      Ident(TypeName("AnyRef")) ::
+      hasPartParents(t.asInstanceOf[internalSymbolTable.Type]).map {
+        implClassName => HasPartMacroImpl.baseClass(c)(implClassName)
+      }.map {
+        baseClass => ComponentApiMacroImpl.refToTopLevelClassDef(c)(baseClass)
+      }
 
     val body = if (t.declarations.filter(symbolIsNonConstructorMethod(c)(_)).isEmpty) {
       List()
@@ -21,14 +39,16 @@ private[congeal] object ComponentApiMacroImpl extends MacroImpl {
                   valName,
                   List(),
                   List(),
-                  ApiMacroImpl.simpleImpl(c)(t),
+                  ApiMacroImpl.refToTopLevelClassDef(c)(t),
                   EmptyTree))
     }
 
     // trait componentApi[T] { <body> }
     ClassDef(
-      Modifiers(Flag.ABSTRACT | Flag.INTERFACE | Flag.DEFAULTPARAM), implClassName, List(),
-      Template(List(Ident(TypeName("AnyRef"))),
+      Modifiers(Flag.ABSTRACT | Flag.INTERFACE | Flag.DEFAULTPARAM),
+      implClassName,
+      List(),
+      Template(supers,
                emptyValDef,
                body))
   }

@@ -14,26 +14,31 @@ package object congeal {
   /** Produces an API for the supplied type `A`.
     * @tparam A the base type to produce an API for
     */
-  type api[A] = macro ApiMacroImpl.impl[A]
+  type api[A] = macro ApiMacroImpl.refToTopLevelClassDefEnsureSimple[A]
 
   /** Produces a default implementation for the supplied type `A`.
     * @tparam A the base type to produce an implementation for
     */
-  type impl[A] = macro ImplMacroImpl.impl[A]
+  type impl[A] = macro ImplMacroImpl.refToTopLevelClassDefEnsureSimple[A]
 
   /** Produces a component API for the supplied type `A`.
     * @tparam A the base type to produce a component API for
     */
-  type componentApi[A] = macro ComponentApiMacroImpl.impl[A]
+  type componentApi[A] = macro ComponentApiMacroImpl.refToTopLevelClassDefEnsureSimple[A]
 
   /** Produces a component implementation for the supplied type `A`.
     * @tparam A the base type to produce a component API for
     */
-  type componentImpl[A] = macro ComponentImplMacroImpl.impl[A]
+  type componentImpl[A] = macro ComponentImplMacroImpl.refToTopLevelClassDefEnsureSimple[A]
 
   /** Indicates a dependency on the component for the supplied type `A`.
     * @tparam A the base type to indicate a dependency on
     */
-  type hasDependency[A] = macro HasDependencyMacroImpl.impl[A]
+  type hasDependency[A] = macro HasDependencyMacroImpl.refToTopLevelClassDefEnsureSimple[A]
+
+  /** Indicates a sub-component for the supplied type `A`.
+    * @tparam A the base type of the sub-component
+    */
+  type hasPart[A] = macro HasPartMacroImpl.refToTopLevelClassDefEnsureSimple[A]
 
 }

@@ -16,10 +16,10 @@ private[congeal] trait MacroImpl extends EnsureSimpleType {
   private type ImplClassName = String
   private var implCache: Map[BaseClassId, ImplClassName] = Map()
 
-  /** Produces a tree referencing the hidden `ClassDef` for the macro result. Ensures that the
-    * type represented by the provided type parameter is a simple type.
+  /** Produces a tree referencing a hidden, top-level `ClassDef` for the macro result. Ensures that
+    * the type represented by the provided type parameter is a simple type.
     */
-  def impl[T: c.WeakTypeTag](c: Context): c.Tree = {
+  def refToTopLevelClassDefEnsureSimple[T: c.WeakTypeTag](c: Context): c.Tree = {
     import c.universe._
     val t: Type = weakTypeOf[T]
     ensureSimpleType(c)(t)
@@ -27,25 +27,25 @@ private[congeal] trait MacroImpl extends EnsureSimpleType {
       Ident(definitions.AnyRefClass)
     }
     else {
-      simpleImpl(c)(t)
+      refToTopLevelClassDef(c)(t)
     }
   }
 
-  /** Produce a tree referencing the hidden `ClassDef` for the macro result. Assumes that the
-    * type represented by the provided type parameter is a simple type.
+  /** Produces a tree referencing a hidden, top-level `ClassDef` for the macro result. May assume
+    * that the type represented by the provided type parameter is a simple type.
     */
-  def simpleImpl(c: Context)(t: c.Type): c.Tree = {
+  def refToTopLevelClassDef(c: Context)(t: c.Type): c.Tree = {
     import c.universe._
     val className = createOrLookupImpl(c)(t)
     val hiddenPackage = Select(Ident(TermName("congeal")), TermName("hidden"))
     Select(hiddenPackage, TypeName(className))
   }
 
+  /** A `ClassDef` to represent the macro result for the supplied input type. */
+  def classDef(c: Context)(t: c.Type, implClassName: c.TypeName): c.universe.ClassDef
+
   /** The name of the macro. for error reporting. */
   protected val macroName: String
-
-  /** Create a `ClassDef` to represent the macro result for the supplied input type. */
-  protected def createClassDef(c: Context)(t: c.Type, implClassName: c.TypeName): c.universe.ClassDef
 
   protected def typeTree(c: Context)(t: c.Type): c.Tree = {
     import c.universe._
@@ -68,7 +68,7 @@ private[congeal] trait MacroImpl extends EnsureSimpleType {
     }
     else {
       val implClassName = TypeName(macroName + "Of" + ts.name).toTypeName
-      val clazz = createClassDef(c)(t, implClassName)
+      val clazz = classDef(c)(t, implClassName)
       val hiddenPackage = Select(Ident(TermName("congeal")), TermName("hidden"))
       c.introduceTopLevel(hiddenPackage.toString, clazz)
       implCache += (baseClassId -> implClassName.toString)

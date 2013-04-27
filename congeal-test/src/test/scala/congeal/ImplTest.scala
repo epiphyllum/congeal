@@ -26,7 +26,7 @@ class ImplTest {
          |  trait URepository {
          |     def getU(uName: String): Option[U] = None // STUB
          |  }
-         |  val uRepository: api[URepository] = new impl[URepository]
+         |  val uRepository: api[URepository] = new impl[URepository] {}
          |  println(uRepository.getU("testUName"))
          |}
       |""".stripMargin,
@@ -44,7 +44,7 @@ class ImplTest {
          |  trait URepository {
          |     def getU(uName: String): Option[U] = None // STUB
          |  }
-         |  val uRepository: api[URepository] = new impl[URepository]
+         |  val uRepository: api[URepository] = new impl[URepository] {}
          |  println(uRepository.getU("testUName"))
          |}
       |""".stripMargin,
