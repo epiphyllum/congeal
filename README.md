@@ -17,6 +17,7 @@ Macros still to do:
   - mock[A]
 
 Other TODO items:
+  - hasPart reverse lookup breaks on separate compile
   - post-hasPart add tests
   - post-hasPart refactor
   - hasDependency should expand as: trait hasDep[T] { val t: T }

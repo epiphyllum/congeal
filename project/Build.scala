@@ -20,7 +20,7 @@ object MyBuild extends Build {
     "congeal-parent",
     file("."),
     settings = buildSettings
-  ) aggregate(main, test)
+  ) aggregate(main, examples, test)
 
   lazy val main = Project(
     "congeal-main",
@@ -29,11 +29,18 @@ object MyBuild extends Build {
       libraryDependencies <+= (scalaVersion)("org.scala-lang.macro-paradise" % "scala-reflect" % _))
   )
 
+  lazy val examples = Project(
+    "congeal-examples",
+    file("congeal-examples"),
+    settings = buildSettings ++ Seq(
+      libraryDependencies <+= (scalaVersion)("org.scala-lang.macro-paradise" % "scala-reflect" % _))
+  ) dependsOn(main)
+
   lazy val test = Project(
     "congeal-test",
     file("congeal-test"),
     settings = buildSettings ++ Seq(
       libraryDependencies += "com.novocode" % "junit-interface" % "0.10-M3",
       libraryDependencies += "junit" % "junit" % "4.11")
-  ) dependsOn(main)
+  ) dependsOn(main, examples)
 }

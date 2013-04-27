@@ -56,6 +56,8 @@ private[congeal] trait MacroImpl extends EnsureSimpleType {
         AppliedTypeTree(
           typeTree(c)(TypeRef(pre, sym, Nil)),
           args map { a => typeTree(c)(a) })
+      case ClassInfoType(_, _, typeSymbol) =>
+        typeTree(c)(typeSymbol.asType.toType)
     }
   }
 

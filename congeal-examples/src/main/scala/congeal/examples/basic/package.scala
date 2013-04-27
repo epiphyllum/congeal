@@ -2,8 +2,6 @@ package congeal.examples.basic
 
 import congeal._
 
-// classes used as test inputs. used only in QuickTest
-
 case class U(uName: String)
 
 trait URepository {
