@@ -1,4 +1,4 @@
-package congeal
+package congeal.simple
 
 import congeal.sc._
 

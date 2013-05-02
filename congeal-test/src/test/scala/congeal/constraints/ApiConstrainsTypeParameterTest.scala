@@ -1,4 +1,4 @@
-package congeal.simple
+package congeal.constraints
 
 import congeal.sc._
 

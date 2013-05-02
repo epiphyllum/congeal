@@ -1,4 +1,4 @@
-package congeal.simple
+package congeal.constraints
 
 // TODO: clean up massive repitition in these tests
 

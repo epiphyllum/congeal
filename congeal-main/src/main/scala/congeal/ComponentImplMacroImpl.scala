@@ -64,7 +64,6 @@ private[congeal] object ComponentImplMacroImpl extends MacroImpl {
       baseClass => ComponentApiMacroImpl.refToTopLevelClassDef(c)(baseClass)
     }
 
-
     val init = DefDef(Modifiers(), TermName("$init$"), List(), List(List()), TypeTree(), Block(List(), Literal(Constant(()))))
     val body = if (t.declarations.filter(symbolIsNonConstructorMethod(c)(_)).isEmpty) {
       List(init)
