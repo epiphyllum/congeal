@@ -10,34 +10,35 @@ private[congeal] object ComponentApiMacroImpl extends MacroImpl {
 
   override def classDef(c: Context)(t: c.Type, implClassName: c.TypeName): c.universe.ClassDef = {
     import c.universe._
-    println(s"ComponentApiMacroImpl.classDef ${t.typeSymbol.fullName}")
 
     // FIX: supers code here is duplicated (with mods) in ComponentImplMacroImpl
-    val internalSymbolTable = c.universe.asInstanceOf[scala.reflect.internal.SymbolTable]
-
     def hasPartParents(tt: c.Type): List[c.Type] = {
-      if (tt.typeSymbol.fullName.startsWith("congeal.hidden.hasPartOf")) {
+      val hasPartTypeName = tt.typeSymbol.fullName
+      val hasPartPrefix = "congeal.hidden.hasPart."
+      if (hasPartTypeName.startsWith(hasPartPrefix)) {
 
-        //   val r = reify {
-        //     trait Foo
-        //     val w = new Foo {}
-        //     val x = w.type
-        //   }
-        // println(showRaw(r))
-
-        def getTheFuckingType(tname: String): c.Type = {
-          val congealPackage = c.mirror.staticPackage("congeal")
-          val examplesPackage = congealPackage.moduleClass.typeSignature.member(TermName("examples"))
-          val basicPackage = examplesPackage.asModule.moduleClass.typeSignature.member(TermName("basic"))
-          basicPackage.asModule.moduleClass.typeSignature.member(TypeName(tname)).typeSignature
+        def getTheFuckingType(parts: List[String]): c.Symbol = {
+          if (parts.size == 1) {
+            c.mirror.staticClass(parts(0))
+          }
+          else {
+            val outermostPackage = c.mirror.staticPackage(parts.head)
+            def getTheFuckingType0(outerPackage: ModuleSymbol, parts: List[String]): c.Symbol = {
+              if (parts.size == 1) {
+                outerPackage.moduleClass.typeSignature.member(TypeName(parts.head))
+              }
+              else {
+                getTheFuckingType0(
+                  outerPackage.moduleClass.typeSignature.member(TermName(parts.head)).asModule,
+                  parts.tail)
+              }
+            }
+            getTheFuckingType0(outermostPackage, parts.tail)
+          }
         }
 
-        val t = if (tt.typeSymbol.fullName.endsWith("UService")) {
-          getTheFuckingType("UService")
-        }
-        else { // URepo
-          getTheFuckingType("URepository")
-        }
+        val underlyingTypeName = hasPartTypeName.substring(hasPartPrefix.size)
+        val t = getTheFuckingType(underlyingTypeName.split('.').toList).typeSignature
         t :: (tt.baseClasses.tail flatMap { s => hasPartParents(s.typeSignature) })
       }
       else
@@ -46,7 +47,7 @@ private[congeal] object ComponentApiMacroImpl extends MacroImpl {
 
     val supers =
       Ident(TypeName("AnyRef")) ::
-    (hasPartParents(t) map { x => ComponentImplMacroImpl.refToTopLevelClassDef(c)(x) })
+      (hasPartParents(t) map { x => ComponentApiMacroImpl.refToTopLevelClassDef(c)(x) })
 
     val body = if (t.declarations.filter(symbolIsNonConstructorMethod(c)(_)).isEmpty) {
       List()

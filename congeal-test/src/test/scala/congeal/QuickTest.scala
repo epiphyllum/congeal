@@ -13,11 +13,11 @@ class QuickTest {
   def testQuick() {
     import congeal.componentApi
     import congeal.examples.basic._
-    trait Application extends componentApi[Root] // {
-    //   println(uRepository.getU("testUName"))
-    //   println(uService.getU("testUName"))
-    // }
-    // new Application with componentImpl[Root]
+    trait Application extends componentApi[Root] {
+      println(uRepository.getU("testUName"))
+      println(uService.getU("testUName"))
+    }
+    new Application with componentImpl[Root]
   }
   
 }

@@ -12,10 +12,6 @@ import scala.reflect.macros.{ Context, Universe }
   */
 private[congeal] trait MacroImpl extends EnsureSimpleType {
 
-  private type BaseClassId = String // use the fullName for now
-  private type ImplClassName = String
-  private var implCache: Map[BaseClassId, ImplClassName] = Map()
-
   /** Produces a tree referencing a hidden, top-level `ClassDef` for the macro result. Ensures that
     * the type represented by the provided type parameter is a simple type.
     */
@@ -36,9 +32,28 @@ private[congeal] trait MacroImpl extends EnsureSimpleType {
     */
   def refToTopLevelClassDef(c: Context)(t: c.Type): c.Tree = {
     import c.universe._
-    val className = createOrLookupImpl(c)(t)
-    val hiddenPackage = Select(Ident(TermName("congeal")), TermName("hidden"))
-    Select(hiddenPackage, TypeName(className))
+    if (!topLevelClassDefIsDefined(c)(t)) {
+      introduceTopLevelClassDef(c)(t)
+    }
+    val parts = fullNameParts(c)(t)
+    val packageParts = parts.dropRight(1)
+    val className = parts.last
+    if (packageParts.isEmpty) {
+      Ident(TypeName(className))
+    }
+    else {
+      def outerPackage(packageParts: List[String]): c.Tree = {
+        if (packageParts.size == 1) {
+          Ident(TermName(packageParts.head))
+        }
+        else {
+          Select(
+            outerPackage(packageParts.dropRight(1)),
+            TermName(packageParts.last))
+        }
+      }
+      Select(outerPackage(packageParts), TypeName(className))
+    }
   }
 
   /** A `ClassDef` to represent the macro result for the supplied input type. */
@@ -61,21 +76,46 @@ private[congeal] trait MacroImpl extends EnsureSimpleType {
     }
   }
 
-  private def createOrLookupImpl(c: Context)(t: c.Type): ImplClassName = {
+  private def topLevelClassDefIsDefined(c: Context)(t: c.Type): Boolean = {
+    // basic idea here is if i dont get an exception retrieving the type then it is defined
     import c.universe._
-    val ts: TypeSymbol = t.typeSymbol.asType
-    val baseClassId = ts.fullName
-    if (implCache.contains(baseClassId)) {
-      implCache(baseClassId)
+    val parts = fullNameParts(c)(t)
+    try {
+      if (parts.size == 1) {
+        c.mirror.staticClass(parts(0))
+        true
+      }
+      else {
+        val outermostPackage = c.mirror.staticPackage(parts.head)
+        def defined(outerPackage: ModuleSymbol, parts: List[String]): Boolean = {
+          if (parts.size == 1) {
+            outerPackage.moduleClass.typeSignature.member(TypeName(parts.head)) != NoSymbol
+          }
+          else {
+            defined(
+              outerPackage.moduleClass.typeSignature.member(TermName(parts.head)).asModule,
+              parts.tail)
+          }
+        }
+        defined(outermostPackage, parts.tail)
+      }
     }
-    else {
-      val implClassName = TypeName(macroName + "Of" + ts.name).toTypeName
-      val clazz = classDef(c)(t, implClassName)
-      val hiddenPackage = Select(Ident(TermName("congeal")), TermName("hidden"))
-      c.introduceTopLevel(hiddenPackage.toString, clazz)
-      implCache += (baseClassId -> implClassName.toString)
-      implClassName.toString
+    catch {
+      case x: scala.reflect.internal.MissingRequirementError => return false
+      case x: scala.ScalaReflectionException => return false
     }
+  }
+
+  private def fullNameParts(c: Context)(t: c.Type): List[String] =
+    "congeal" :: "hidden" :: macroName :: t.typeSymbol.fullName.split('.').toList
+
+  private def introduceTopLevelClassDef(c: Context)(t: c.Type) {
+    import c.universe._
+    val parts = fullNameParts(c)(t)
+    val packageName = parts.dropRight(1).mkString(".")
+    val className = parts.last
+    val clazz = classDef(c)(t, TypeName(className).toTypeName)
+    c.introduceTopLevel(packageName, clazz)
   }
 
 }

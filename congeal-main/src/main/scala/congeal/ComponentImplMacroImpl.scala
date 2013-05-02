@@ -12,28 +12,46 @@ private[congeal] object ComponentImplMacroImpl extends MacroImpl {
     import c.universe._
 
     // FIX: supers code here is duplicated (with mods) in ComponentApiMacroImpl
-    val internalSymbolTable = c.universe.asInstanceOf[scala.reflect.internal.SymbolTable]
+    def hasPartParents(tt: c.Type): List[c.Type] = {
+      val hasPartTypeName = tt.typeSymbol.fullName
+      val hasPartPrefix = "congeal.hidden.hasPart."
+      if (hasPartTypeName.startsWith(hasPartPrefix)) {
 
-    def hasPartParents(tt: internalSymbolTable.Type): List[String] = {
-      if (tt.typeSymbol.fullName.startsWith("congeal.hidden.hasPartOf"))
-        tt.typeSymbol.name.toString :: (tt.parents flatMap hasPartParents)
+        def getTheFuckingType(parts: List[String]): c.Symbol = {
+          if (parts.size == 1) {
+            c.mirror.staticClass(parts(0))
+          }
+          else {
+            val outermostPackage = c.mirror.staticPackage(parts.head)
+            def getTheFuckingType0(outerPackage: ModuleSymbol, parts: List[String]): c.Symbol = {
+              if (parts.size == 1) {
+                outerPackage.moduleClass.typeSignature.member(TypeName(parts.head))
+              }
+              else {
+                getTheFuckingType0(
+                  outerPackage.moduleClass.typeSignature.member(TermName(parts.head)).asModule,
+                  parts.tail)
+              }
+            }
+            getTheFuckingType0(outermostPackage, parts.tail)
+          }
+        }
+
+        val underlyingTypeName = hasPartTypeName.substring(hasPartPrefix.size)
+        val t = getTheFuckingType(underlyingTypeName.split('.').toList).typeSignature
+        t :: (tt.baseClasses.tail flatMap { s => hasPartParents(s.typeSignature) })
+      }
       else
-        tt.parents flatMap hasPartParents
+        (tt.baseClasses.tail flatMap { s => hasPartParents(s.typeSignature) })
     }
 
     val supers =
       ComponentApiMacroImpl.refToTopLevelClassDef(c)(t) ::
-      hasPartParents(t.asInstanceOf[internalSymbolTable.Type]).map {
-        implClassName => HasPartMacroImpl.baseClass(c)(implClassName)
-      }.map {
-        baseClass => ComponentImplMacroImpl.refToTopLevelClassDef(c)(baseClass)
-      }
+      (hasPartParents(t) map { x => ComponentImplMacroImpl.refToTopLevelClassDef(c)(x) })
 
-
-
-
+    val internalSymbolTable = c.universe.asInstanceOf[scala.reflect.internal.SymbolTable]
     def hasDependencyParents(tt: internalSymbolTable.Type): List[String] = {
-      if (tt.typeSymbol.fullName.startsWith("congeal.hidden.hasDependencyOf"))
+      if (tt.typeSymbol.fullName.startsWith("congeal.hidden.hasDependency."))
         tt.typeSymbol.name.toString :: (tt.parents flatMap hasDependencyParents)
       else
         tt.parents flatMap hasDependencyParents
