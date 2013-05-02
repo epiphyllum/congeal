@@ -4,6 +4,13 @@ The general idea of the type macros I want to implement here is described in my
 blog post [Taming the Cake Pattern with Type
 Macros](http://scabl.blogspot.com/2013/03/cbdi-2.html).
 
+All macros require type `A` to be "simple", i.e., meet the following conditions:
+
+  - is a trait
+  - is static (i.e., not a member of a method or trait. only objects all the way up.)
+  - no non-private[this] inner classes
+  - no members that have params or return types that derive from A
+
 Macros completed so far:
   - api[A]
   - impl[A]
@@ -13,17 +20,18 @@ Macros completed so far:
   - hasPart[A]
 
 Macros still to do:
-  - hasPrivatePart[A]
+  - overridesPart[A]?
   - mock[A]
+  - hasPrivatePart[A]
 
 Other TODO items:
-  - post-hasPart add tests
+  - bug: nested in objects isnt working
   - post-hasPart refactor
-  - hasDependency should expand as: trait hasDep[T] { val t: T }
-  - basic documentation
-  - create another project in the build called congeal-examples
+  - hasDependency should expand as: trait hasDep[T] { val t: api[T] }
   - cull TODO and FIX comments from the code
-  - more tests
+
+  - fill out congeal-examples
+  - basic documentation
   - use AST and/or proxies to remove restrictions on the classes that can be congealed
 
 Error Messages to override:
