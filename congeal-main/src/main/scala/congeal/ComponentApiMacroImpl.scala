@@ -5,38 +5,24 @@ import scala.reflect.macros.Context
 import scala.reflect.macros.Universe
 
 /** Contains the implementation for the `componentApi` type macro. */
-private[congeal] object ComponentApiMacroImpl extends MacroImpl {
+private[congeal] object ComponentApiMacroImpl extends MacroImpl with UnderlyingTypesOfSupers with InjectableValNames {
 
   override protected val macroName = "componentApi"
 
   override def classDef(c: Context)(t: c.Type, implClassName: c.TypeName): c.universe.ClassDef = {
     import c.universe._
 
-    // FIX: supers code here is duplicated (with mods) in ComponentImplMacroImpl
-    def hasPartParents(tt: c.Type): List[c.Type] = {
-      val hasPartTypeName = tt.typeSymbol.fullName
-      val hasPartPrefix = "congeal.hidden.hasPart."
-      if (hasPartTypeName.startsWith(hasPartPrefix)) {
-        val underlyingTypeName = hasPartTypeName.substring(hasPartPrefix.size)
-        val t = staticSymbol(c)(underlyingTypeName).typeSignature
-        t :: (tt.baseClasses.tail flatMap { s => hasPartParents(s.typeSignature) })
-      }
-      else
-        (tt.baseClasses.tail flatMap { s => hasPartParents(s.typeSignature) })
-    }
-
     val supers =
       Ident(TypeName("AnyRef")) ::
-      (hasPartParents(t) map { x => ComponentApiMacroImpl.refToTopLevelClassDef(c)(x) })
+      (underlyingTypesOfHasPartSupers(c)(t) map { x => ComponentApiMacroImpl.refToTopLevelClassDef(c)(x) })
 
-    val body = if (t.declarations.filter(symbolIsNonConstructorMethod(c)(_)).isEmpty) {
+    def typeHasEmptyApi = t.declarations.filter(symbolIsNonConstructorMethod(c)(_)).isEmpty
+    val body = if (typeHasEmptyApi) {
       List()
     }
     else {
-      // val t: api[T]
-      val valName = TermName(uncapitalize(t.typeSymbol.name.toString))
       List(DefDef(Modifiers(Flag.DEFERRED),
-                  valName,
+                  injectableValName(c)(t),
                   List(),
                   List(),
                   ApiMacroImpl.refToTopLevelClassDef(c)(t),
@@ -51,11 +37,6 @@ private[congeal] object ComponentApiMacroImpl extends MacroImpl {
       Template(supers,
                emptyValDef,
                body))
-  }
-
-  // TODO: this could use some work
-  private def uncapitalize(s: String): String = {
-    s.head.toLower +: s.tail
   }
 
 }

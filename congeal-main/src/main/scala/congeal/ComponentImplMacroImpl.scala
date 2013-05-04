@@ -4,58 +4,36 @@ import language.experimental.macros
 import scala.reflect.macros.{ Context, Universe }
 
 /** Contains the implementation for the `componentImpl` type macro. */
-private[congeal] object ComponentImplMacroImpl extends MacroImpl {
+private[congeal] object ComponentImplMacroImpl extends MacroImpl with UnderlyingTypesOfSupers with InjectableValNames {
 
   override protected val macroName = "componentImpl"
 
   override def classDef(c: Context)(t: c.Type, implClassName: c.TypeName): c.universe.ClassDef = {
     import c.universe._
 
-    // FIX: supers code here is duplicated (with mods) in ComponentApiMacroImpl
-    def hasPartParents(tt: c.Type): List[c.Type] = {
-      val hasPartTypeName = tt.typeSymbol.fullName
-      val hasPartPrefix = "congeal.hidden.hasPart."
-      if (hasPartTypeName.startsWith(hasPartPrefix)) {
-        val underlyingTypeName = hasPartTypeName.substring(hasPartPrefix.size)
-        val t = staticSymbol(c)(underlyingTypeName).typeSignature
-        t :: (tt.baseClasses.tail flatMap { s => hasPartParents(s.typeSignature) })
-      }
-      else
-        (tt.baseClasses.tail flatMap { s => hasPartParents(s.typeSignature) })
-    }
-
+    val parts = underlyingTypesOfHasPartSupers(c)(t)
     val supers =
       ComponentApiMacroImpl.refToTopLevelClassDef(c)(t) ::
-      (hasPartParents(t) map { x => ComponentImplMacroImpl.refToTopLevelClassDef(c)(x) })
+      (parts map { p => ComponentImplMacroImpl.refToTopLevelClassDef(c)(p) })
 
-    val internalSymbolTable = c.universe.asInstanceOf[scala.reflect.internal.SymbolTable]
-    def hasDependencyParents(tt: internalSymbolTable.Type): List[String] = {
-      if (tt.typeSymbol.fullName.startsWith("congeal.hidden.hasDependency."))
-        tt.typeSymbol.name.toString :: (tt.parents flatMap hasDependencyParents)
-      else
-        tt.parents flatMap hasDependencyParents
-    }
-
-    val dependencies = hasDependencyParents(t.asInstanceOf[internalSymbolTable.Type]).map {
-      implClassName => HasDependencyMacroImpl.baseClass(c)(implClassName)
-    }
+    val dependencies = underlyingTypesOfHasDependencySupers(c)(t)
     val selfTypes = dependencies.map {
-      baseClass => ComponentApiMacroImpl.refToTopLevelClassDef(c)(baseClass)
+      d => ComponentApiMacroImpl.refToTopLevelClassDef(c)(d)
     }
 
+    def typeHasEmptyApi = t.declarations.filter(symbolIsNonConstructorMethod(c)(_)).isEmpty
     val init = DefDef(Modifiers(), TermName("$init$"), List(), List(List()), TypeTree(), Block(List(), Literal(Constant(()))))
-    val body = if (t.declarations.filter(symbolIsNonConstructorMethod(c)(_)).isEmpty) {
+    val body = if (typeHasEmptyApi) {
       List(init)
     }
     else {
-      val valName = TermName(uncapitalize(t.typeSymbol.name.toString))
       List(
         init,
 
         // override lazy val t: api[T] = new impl[T] { lazy val t: api[T] = outer.t }
         ValDef(
           Modifiers(Flag.OVERRIDE | Flag.LAZY),
-          valName,
+          injectableValName(c)(t),
           ApiMacroImpl.refToTopLevelClassDef(c)(t),
           Block(
             List(
@@ -81,15 +59,14 @@ private[congeal] object ComponentImplMacroImpl extends MacroImpl {
                     ::
 
                     (dependencies map { d =>
-                      val selfTypeValName = uncapitalize(d.typeSymbol.name.toString)
+                      val selfTypeValName = injectableValName(c)(d)
                       DefDef(
                         Modifiers(Flag.OVERRIDE),
-                        TermName(selfTypeValName),
+                        selfTypeValName,
                         List(),
                         List(List()),
                         TypeTree(),
-                        //typeTree(c)(d),
-                        Select(This(implClassName), TermName(selfTypeValName)))
+                        Select(This(implClassName), selfTypeValName))
                     })
 
                   ))),
@@ -112,12 +89,6 @@ private[congeal] object ComponentImplMacroImpl extends MacroImpl {
           CompoundTypeTree(Template(selfTypes, emptyValDef, List())),
           EmptyTree),
         body))
-  }
-
-  // TODO: this could use some work
-  // FIX: duplicated in ComponentApiImpl
-  private def uncapitalize(s: String): String = {
-    s.head.toLower +: s.tail
   }
 
 }

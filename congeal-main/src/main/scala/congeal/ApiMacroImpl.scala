@@ -1,7 +1,8 @@
 package congeal
 
 import language.experimental.macros
-import scala.reflect.macros.{ Context, Universe }
+import scala.reflect.macros.Context
+import scala.reflect.macros.Universe
 
 /** Contains the implementation for the `api` type macro. */
 private[congeal] object ApiMacroImpl extends MacroImpl {
@@ -10,9 +11,10 @@ private[congeal] object ApiMacroImpl extends MacroImpl {
 
   override def classDef(c: Context)(t: c.Type, implClassName: c.TypeName): c.universe.ClassDef = {
     import c.universe._
+
+    // FIX: see if you can avoid using internalSymbolTable here
     val internalSymbolTable = c.universe.asInstanceOf[scala.reflect.internal.SymbolTable]
 
-    // FIX: should be members not declarations
     val body = t.declarations.filter(symbolIsNonConstructorMethod(c)(_)).map { s =>
       val method = s.asMethod
 
@@ -26,7 +28,7 @@ private[congeal] object ApiMacroImpl extends MacroImpl {
       }
 
       DefDef(
-        Modifiers(Flag.DEFERRED), // FIX: match protected/public/whatever of copied method
+        Modifiers(Flag.DEFERRED),
         s.name,
         tparams,
         paramss,

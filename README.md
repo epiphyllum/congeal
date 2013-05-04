@@ -25,14 +25,16 @@ Macros still to do:
   - hasPrivatePart[A]
 
 Other TODO items:
-  - post-hasPart refactor: MacroImpl subclasses
   - cull TODO and FIX comments from the code
-
   - fill out congeal-examples
   - basic documentation
+  - test/implement: A inherits from B, api[A] inherits from api[B]
+  - test/implement: A inherits from B, impl[A] inherits from impl[B]
+  - test/implement: A has vals
+  - test/implement: A has non-public, non-private decls
+
+Longer term ideas:
   - use AST and/or proxies to remove restrictions on the classes that can be congealed
-  - bug: putting injectables anywhere under package congeal causes trouble
-    - NOTE this does not happen with package congeal, but does with package.congeal.examples.basic
 
 Error Messages to override:
 
