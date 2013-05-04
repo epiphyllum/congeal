@@ -7,130 +7,132 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 
-/** JUnit tests to make sure the `congeal.impl` macro constrains its type parameter as
+/** JUnit tests to make sure the congeal macros constrain thier type parameters as
   * expected by rejecting (emitting error on) type parameters that do not match constraints.
+  *
+  * We only need to test on a single macro, since they all share type parameter checking code.
   */
 @RunWith(classOf[JUnit4])
-class ImplConstrainsTypeParameterTest {
+class MacrosConstrainTypeParameterTest {
 
   @Test
-  def implCompilesOnTrait() {
+  def apiCompilesOnTrait() {
     compilingSourceSucceeds(
       """|object Test extends App {
          |  trait Foo
-         |  type FooApi = congeal.impl[Foo]
+         |  type FooApi = congeal.api[Foo]
          |}
       |""".stripMargin)
   }
 
   @Test
-  def implDoesNotCompileOnClass() {
+  def apiDoesNotCompileOnClass() {
     compilingSourceErrorsWithMessage(
       """|object Test extends App {
          |  class Foo
-         |  type FooApi = congeal.impl[Foo]
+         |  type FooApi = congeal.api[Foo]
          |}
       |""".stripMargin,
-      """|source.scala:3: error: Foo must be a trait in impl[Foo]
-         |  type FooApi = congeal.impl[Foo]
+      """|source.scala:3: error: Foo must be a trait in api[Foo]
+         |  type FooApi = congeal.api[Foo]
          |                        ^
          |one error found
       |""".stripMargin)
   }
 
   @Test
-  def implDoesNotCompileOnTraitInsideTrait() {
+  def apiDoesNotCompileOnTraitInsideTrait() {
     compilingSourceErrorsWithMessage(
       """|trait A {
          |  trait Foo
-         |  type FooApi = congeal.impl[Foo]
+         |  type FooApi = congeal.api[Foo]
          |}
       |""".stripMargin,
-      """|source.scala:3: error: Foo must be static in impl[Foo]
-         |  type FooApi = congeal.impl[Foo]
+      """|source.scala:3: error: Foo must be static in api[Foo]
+         |  type FooApi = congeal.api[Foo]
          |                        ^
          |one error found
       |""".stripMargin)
   }
 
   @Test
-  def implDoesNotCompileOnTraitInsideMethod() {
+  def apiDoesNotCompileOnTraitInsideMethod() {
     compilingSourceErrorsWithMessage(
       """|trait T {
          |  def a {
          |    trait Foo
-         |    type FooApi = congeal.impl[Foo]
+         |    type FooApi = congeal.api[Foo]
          |  }
          |}
       |""".stripMargin,
-      """|source.scala:4: error: Foo must be static in impl[Foo]
-         |    type FooApi = congeal.impl[Foo]
+      """|source.scala:4: error: Foo must be static in api[Foo]
+         |    type FooApi = congeal.api[Foo]
          |                          ^
          |one error found
       |""".stripMargin)
   }
 
   @Test
-  def implDoesNotCompileOnTraitWithNonPrivateThisInnerClasses() {
+  def apiDoesNotCompileOnTraitWithNonPrivateThisInnerClasses() {
     compilingSourceErrorsWithMessage(
       """|object Test extends App {
          |  trait Foo { trait Bar }
-         |  type FooApi = congeal.impl[Foo]
+         |  type FooApi = congeal.api[Foo]
          |}
       |""".stripMargin,
-      """|source.scala:3: error: Foo must not have non-private[this] inner classes in impl[Foo]
-         |  type FooApi = congeal.impl[Foo]
+      """|source.scala:3: error: Foo must not have non-private[this] inner classes in api[Foo]
+         |  type FooApi = congeal.api[Foo]
          |                        ^
          |one error found
       |""".stripMargin)
   }
 
   val selfReferencingMemberErrorMessage =
-    """|source.scala:3: error: Foo must not have self-referencing members in impl[Foo]
-       |  type FooApi = congeal.impl[Foo]
+    """|source.scala:3: error: Foo must not have self-referencing members in api[Foo]
+       |  type FooApi = congeal.api[Foo]
        |                        ^
        |one error found
     |""".stripMargin
 
   @Test
-  def implDoesNotCompileOnTraitWithSelfReferencingMembers1() {
+  def apiDoesNotCompileOnTraitWithSelfReferencingMembers1() {
     compilingSourceErrorsWithMessage(
       """|object Test extends App {
          |  trait Foo { def bar: Foo }
-         |  type FooApi = congeal.impl[Foo]
+         |  type FooApi = congeal.api[Foo]
          |}
       |""".stripMargin,
       selfReferencingMemberErrorMessage)
   }
 
   @Test
-  def implDoesNotCompileOnTraitWithSelfReferencingMembers2() {
+  def apiDoesNotCompileOnTraitWithSelfReferencingMembers2() {
     compilingSourceErrorsWithMessage(
       """|object Test extends App {
          |  trait Foo { def bar(f: Foo): Unit }
-         |  type FooApi = congeal.impl[Foo]
+         |  type FooApi = congeal.api[Foo]
          |}
       |""".stripMargin,
       selfReferencingMemberErrorMessage)
   }
 
   @Test
-  def implDoesNotCompileOnTraitWithSelfReferencingMembers3() {
+  def apiDoesNotCompileOnTraitWithSelfReferencingMembers3() {
     compilingSourceErrorsWithMessage(
       """|object Test extends App {
          |  trait Foo { val bar: Foo = null }
-         |  type FooApi = congeal.impl[Foo]
+         |  type FooApi = congeal.api[Foo]
          |}
       |""".stripMargin,
       selfReferencingMemberErrorMessage)
   }
 
   @Test
-  def implDoesNotCompileOnTraitWithSelfReferencingMembers4() {
+  def apiDoesNotCompileOnTraitWithSelfReferencingMembers4() {
     compilingSourceErrorsWithMessage(
       """|object Test extends App {
          |  trait Foo { var bar: Foo = null }
-         |  type FooApi = congeal.impl[Foo]
+         |  type FooApi = congeal.api[Foo]
          |}
       |""".stripMargin,
       selfReferencingMemberErrorMessage)
