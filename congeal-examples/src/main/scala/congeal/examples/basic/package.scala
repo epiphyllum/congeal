@@ -1,5 +1,4 @@
-// DON't PUT YOUR CODE IN PACKAGE congeal! The compiler will eat you!
-package congealExamples.basic
+package congeal.examples.basic
 
 import congeal._
 

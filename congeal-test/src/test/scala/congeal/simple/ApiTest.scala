@@ -7,7 +7,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 
-/** JUnit tests for `congeal.api` macro. */
+/** JUnit tests for basic usage of the `congeal.api` macro. */
 @RunWith(classOf[JUnit4])
 class ApiTest {
 
@@ -32,25 +32,6 @@ class ApiTest {
          |}
       |""".stripMargin,
       "Test",
-      "None\n")
-  }
-
-  @Test
-  def apiWorksInNonDefaultPackage() {
-    compilingSourceProducesAppWithOutput(
-      """|package foo.bar
-         |import congeal._
-         |object Test extends App {
-         |  case class U(uName: String)
-         |  trait URepository {
-         |     def getU(uName: String): Option[U] = None // STUB
-         |  }
-         |  class URepositoryImpl extends URepository with api[URepository]
-         |  val uRepository: api[URepository] = new URepositoryImpl
-         |  println(uRepository.getU("testUName"))
-         |}
-      |""".stripMargin,
-      "foo.bar.Test",
       "None\n")
   }
 

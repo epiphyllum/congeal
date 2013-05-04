@@ -25,7 +25,6 @@ Macros still to do:
   - hasPrivatePart[A]
 
 Other TODO items:
-  - add tests for A in different kinds of locations
   - post-hasPart refactor: MacroImpl subclasses
   - cull TODO and FIX comments from the code
 
