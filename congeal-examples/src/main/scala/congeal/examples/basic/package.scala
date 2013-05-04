@@ -1,4 +1,5 @@
-package congeal.examples.basic
+// DON't PUT YOUR CODE IN PACKAGE congeal! The compiler will eat you!
+package congealExamples.basic
 
 import congeal._
 
@@ -20,7 +21,7 @@ abstract class Application extends componentApi[Root] {
 }
 
 // outputs None/None
-object Test extends App {
+object ApplicationTest extends App {
   new Application with componentImpl[Root]
 }
 

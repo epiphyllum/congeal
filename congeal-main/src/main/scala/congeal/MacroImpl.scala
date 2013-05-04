@@ -1,6 +1,7 @@
 package congeal
 
-import scala.reflect.macros.{ Context, Universe }
+import scala.reflect.macros.Context
+import scala.reflect.macros.Universe
 
 /** An implementation for a type macro that takes a single type parameter as argument. Ensures the
   * provided type is a simple type, and if so, generates a hidden `ClassDef` for the macro result,
@@ -10,7 +11,7 @@ import scala.reflect.macros.{ Context, Universe }
   * Implementing classes must provide the `macroName`, for error reporting, and a method for
   * creating a `ClassDef` for an input `Type`.
   */
-private[congeal] trait MacroImpl extends EnsureSimpleType {
+private[congeal] trait MacroImpl extends EnsureSimpleType with StaticSymbolLookup {
 
   /** Produces a tree referencing a hidden, top-level `ClassDef` for the macro result. Ensures that
     * the type represented by the provided type parameter is a simple type.
@@ -62,6 +63,7 @@ private[congeal] trait MacroImpl extends EnsureSimpleType {
   /** The name of the macro. for error reporting. */
   protected val macroName: String
 
+  // TODO: consider move into a supporting traits
   protected def typeTree(c: Context)(t: c.Type): c.Tree = {
     import c.universe._
     t match {
@@ -77,45 +79,22 @@ private[congeal] trait MacroImpl extends EnsureSimpleType {
   }
 
   private def topLevelClassDefIsDefined(c: Context)(t: c.Type): Boolean = {
-    // basic idea here is if i dont get an exception retrieving the type then it is defined
-    import c.universe._
-    val parts = fullNameParts(c)(t)
-    try {
-      if (parts.size == 1) {
-        c.mirror.staticClass(parts(0))
-        true
-      }
-      else {
-        val outermostPackage = c.mirror.staticPackage(parts.head)
-        def defined(outerPackage: ModuleSymbol, parts: List[String]): Boolean = {
-          if (parts.size == 1) {
-            outerPackage.moduleClass.typeSignature.member(TypeName(parts.head)) != NoSymbol
-          }
-          else {
-            defined(
-              outerPackage.moduleClass.typeSignature.member(TermName(parts.head)).asModule,
-              parts.tail)
-          }
-        }
-        defined(outermostPackage, parts.tail)
-      }
-    }
-    catch {
-      case x: scala.reflect.internal.MissingRequirementError => return false
-      case x: scala.ScalaReflectionException => return false
-    }
+    staticSymbol(c)(macroClassName(c)(t)) != c.universe.NoSymbol
   }
 
-  private def fullNameParts(c: Context)(t: c.Type): List[String] =
-    "congeal" :: "hidden" :: macroName :: t.typeSymbol.fullName.split('.').toList
+  private def macroClassName(c: Context)(t: c.Type) =
+    "congeal.hidden." + macroName + "." + t.typeSymbol.fullName
 
   private def introduceTopLevelClassDef(c: Context)(t: c.Type) {
     import c.universe._
-    val parts = fullNameParts(c)(t)
+    val parts = macroClassName(c)(t).split('.').toList
     val packageName = parts.dropRight(1).mkString(".")
     val className = parts.last
     val clazz = classDef(c)(t, TypeName(className).toTypeName)
     c.introduceTopLevel(packageName, clazz)
   }
+
+  private def fullNameParts(c: Context)(t: c.Type): List[String] =
+    macroClassName(c)(t).split('.').toList
 
 }

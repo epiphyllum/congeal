@@ -1,7 +1,8 @@
 package congeal
 
 import language.experimental.macros
-import scala.reflect.macros.{ Context, Universe }
+import scala.reflect.macros.Context
+import scala.reflect.macros.Universe
 
 /** Contains the implementation for the `componentApi` type macro. */
 private[congeal] object ComponentApiMacroImpl extends MacroImpl {
@@ -16,29 +17,8 @@ private[congeal] object ComponentApiMacroImpl extends MacroImpl {
       val hasPartTypeName = tt.typeSymbol.fullName
       val hasPartPrefix = "congeal.hidden.hasPart."
       if (hasPartTypeName.startsWith(hasPartPrefix)) {
-
-        def getTheFuckingType(parts: List[String]): c.Symbol = {
-          if (parts.size == 1) {
-            c.mirror.staticClass(parts(0))
-          }
-          else {
-            val outermostPackage = c.mirror.staticPackage(parts.head)
-            def getTheFuckingType0(outerPackage: ModuleSymbol, parts: List[String]): c.Symbol = {
-              if (parts.size == 1) {
-                outerPackage.moduleClass.typeSignature.member(TypeName(parts.head))
-              }
-              else {
-                getTheFuckingType0(
-                  outerPackage.moduleClass.typeSignature.member(TermName(parts.head)).asModule,
-                  parts.tail)
-              }
-            }
-            getTheFuckingType0(outermostPackage, parts.tail)
-          }
-        }
-
         val underlyingTypeName = hasPartTypeName.substring(hasPartPrefix.size)
-        val t = getTheFuckingType(underlyingTypeName.split('.').toList).typeSignature
+        val t = staticSymbol(c)(underlyingTypeName).typeSignature
         t :: (tt.baseClasses.tail flatMap { s => hasPartParents(s.typeSignature) })
       }
       else
