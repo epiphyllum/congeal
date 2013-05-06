@@ -26,7 +26,6 @@ Macros still to do:
 
 Other TODO items:
   - cull TODO and FIX comments from the code
-  - fill out congeal-examples
   - basic documentation
   - test/implement: A inherits from B, api[A] inherits from api[B]
   - test/implement: A inherits from B, impl[A] inherits from impl[B]
@@ -34,6 +33,7 @@ Other TODO items:
   - test/implement: A has non-public, non-private decls
 
 Longer term ideas:
+  - improved error messages
   - use AST and/or proxies to remove restrictions on the classes that can be congealed
 
 Error Messages to override:

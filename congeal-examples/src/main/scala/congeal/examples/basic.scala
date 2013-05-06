@@ -5,7 +5,7 @@ import congeal._
 case class U(uName: String)
 
 trait URepository {
-  def getU(uName: String): Option[U] = None // STUB
+  def getU(uName: String): Option[U] = Some(U(uName))
 }
 
 trait UService extends hasDependency[URepository] {
@@ -19,24 +19,10 @@ abstract class Application extends componentApi[Root] {
   println(uService.getU("testUName"))
 }
 
-// outputs None/None
+/* outputs
+Some(U(testUName))
+Some(U(testUName))
+*/
 object ApplicationTest extends App {
   new Application with componentImpl[Root]
-}
-
-
-
-
-// here lies stuff from next example:
-
-case class S(sName: String)
-
-case class T(tName: String)
-
-trait SRepository {
-  def getS(sName: String): Option[S] = None // STUB
-}
-
-trait TRepository {
-  def getT(tName: String): Option[T] = None // STUB
 }

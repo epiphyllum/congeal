@@ -4,6 +4,8 @@ import language.experimental.macros
 import scala.reflect.macros.Context
 import scala.reflect.macros.Universe
 
+// this is by far the nastiest macro impl, and i consider it a work in progress
+
 /** Contains the implementation for the `api` type macro. */
 private[congeal] object ApiMacroImpl extends MacroImpl {
 
