@@ -17,7 +17,11 @@ private[congeal] object ApiMacroImpl extends MacroImpl {
     // FIX: see if you can avoid using internalSymbolTable here
     val internalSymbolTable = c.universe.asInstanceOf[scala.reflect.internal.SymbolTable]
 
-    val body = t.declarations.filter(symbolIsNonConstructorMethod(c)(_)).map { s =>
+    val publicNonConstructorMethods = t.declarations.filter { d =>
+      d.isPublic &&
+      symbolIsNonConstructorMethod(c)(d)
+    }
+    val body = publicNonConstructorMethods.map { s =>
       val method = s.asMethod
 
       val tparams = method.typeParams map { tp =>

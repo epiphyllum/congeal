@@ -21,7 +21,6 @@ Macros completed so far:
 
 Macros still to do:
   - standsInFor[A] - partially implemented still to do:
-    - handle multiple sifs on a single trait
     - tests
   - mock[A]
   - hasPrivatePart[A]

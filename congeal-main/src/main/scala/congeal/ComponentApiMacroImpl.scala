@@ -16,17 +16,14 @@ private[congeal] object ComponentApiMacroImpl extends MacroImpl with UnderlyingT
     //println(s"ComponentApiMacroImpl ${tfn(t)}")
 
     val standsInFors = underlyingTypesOfStandsInForSupers(c)(t)
-    assert(standsInFors.size <= 1)
-    val sifOption = standsInFors.headOption
-
-    def standIns(part: c.Type): List[c.Type] = underlyingTypesOfStandsInForSupers(c)(part) match {
-      case Nil => part :: Nil
-      case sifs => sifs
+    val parts = {
+      def standInsForPart(part: c.Type): List[c.Type] = underlyingTypesOfStandsInForSupers(c)(part) match {
+        case Nil => part :: Nil
+        case sifs => sifs
+      }
+      underlyingTypesOfHasPartSupers(c)(t).flatMap({ p => standInsForPart(p) }).toSet.toList
     }
-    val parts = underlyingTypesOfHasPartSupers(c)(t).flatMap({ p => standIns(p) }).toSet.toList
-    val supers =
-      (sifOption map { sif => ComponentApiMacroImpl.refToTopLevelClassDef(c)(sif) } getOrElse Ident(TypeName("AnyRef"))) ::
-      (parts map { p => ComponentApiMacroImpl.refToTopLevelClassDef(c)(p) })
+    val supers = (standsInFors ::: parts) map { s => ComponentApiMacroImpl.refToTopLevelClassDef(c)(s) }
 
     //supers foreach { s => println(s"super $s") }
 
@@ -35,18 +32,19 @@ private[congeal] object ComponentApiMacroImpl extends MacroImpl with UnderlyingT
       List()
     }
     else {
-      val standsInFors = underlyingTypesOfStandsInForSupers(c)(t) match {
-        case Nil => t :: Nil
+      val injections = standsInFors match {
+        case Nil => List(t)
         case sifs => sifs
       }
-      standsInFors map { sif =>
-        //println(s"sif ${tfn(sif)}")
+      injections map { i =>
+        //println(s"injection ${tfn(i)}")
+
         // lazy val sif: api[Sif]
         DefDef(Modifiers(Flag.DEFERRED),
-               injectableValName(c)(sif),
+               injectableValName(c)(i),
                List(),
                List(),
-               ApiMacroImpl.refToTopLevelClassDef(c)(sif),
+               ApiMacroImpl.refToTopLevelClassDef(c)(i),
                EmptyTree)
       }
     }
