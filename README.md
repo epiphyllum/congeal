@@ -20,7 +20,9 @@ Macros completed so far:
   - hasPart[A]
 
 Macros still to do:
-  - overridesPart[A]?
+  - standsInFor[A] - partially implemented still to do:
+    - handle multiple sifs on a single trait
+    - tests
   - mock[A]
   - hasPrivatePart[A]
 

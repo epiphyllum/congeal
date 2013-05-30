@@ -11,10 +11,22 @@ private[congeal] object ComponentImplMacroImpl extends MacroImpl with Underlying
   override def classDef(c: Context)(t: c.Type, implClassName: c.TypeName): c.universe.ClassDef = {
     import c.universe._
 
-    val parts = underlyingTypesOfHasPartSupers(c)(t)
+    //def tfn(t: c.Type): String = t.typeSymbol.fullName
+    //println(s"ComponentImplMacroImpl ${tfn(t)}")
+
+    val standsInFors = underlyingTypesOfStandsInForSupers(c)(t) match {
+      case Nil => t :: Nil
+      case sifs => sifs
+    }
+    assert(standsInFors.size == 1)
+    val sif = standsInFors.head
+
+    val parts = underlyingTypesOfHasPartSupers(c)(t).reverse
     val supers =
-      ComponentApiMacroImpl.refToTopLevelClassDef(c)(t) ::
+      ComponentApiMacroImpl.refToTopLevelClassDef(c)(sif) ::
       (parts map { p => ComponentImplMacroImpl.refToTopLevelClassDef(c)(p) })
+
+    //supers foreach { s => println(s"super $s") }
 
     val dependencies = underlyingTypesOfHasDependencySupers(c)(t)
     val selfTypes = dependencies.map {
@@ -30,11 +42,11 @@ private[congeal] object ComponentImplMacroImpl extends MacroImpl with Underlying
       List(
         init,
 
-        // override lazy val t: api[T] = new impl[T] { lazy val t: api[T] = outer.t }
+        // override lazy val sif: api[Sif] = new impl[T] { lazy val dep: api[Dep] = outer.dep }
         ValDef(
           Modifiers(Flag.OVERRIDE | Flag.LAZY),
-          injectableValName(c)(t),
-          ApiMacroImpl.refToTopLevelClassDef(c)(t),
+          injectableValName(c)(sif),
+          ApiMacroImpl.refToTopLevelClassDef(c)(sif),
           Block(
             List(
               ClassDef(
@@ -73,6 +85,8 @@ private[congeal] object ComponentImplMacroImpl extends MacroImpl with Underlying
 
             Apply(Select(New(Ident(TypeName("$anon"))), nme.CONSTRUCTOR), List()))))
     }
+
+    //println(s"LEAVE ComponentImplMacroImpl ${tfn(t)}")
 
     // trait componentImpl[T] extends componentApi[T] {
     //   override lazy val t: api[T] = new impl[T] {}

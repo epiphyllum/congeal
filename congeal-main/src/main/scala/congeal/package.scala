@@ -41,4 +41,9 @@ package object congeal {
     */
   type hasPart[A] = macro HasPartMacroImpl.refToTopLevelClassDefEnsureSimple[A]
 
+  /** Indicates a replacement component for the supplied type `A`.
+    * @tparam A the base type of the replacement component
+    */
+  type standsInFor[A] = macro StandsInForMacroImpl.refToTopLevelClassDefEnsureSimple[A]
+
 }

@@ -15,7 +15,8 @@ class QuickTest {
   def testQuick() {
 
     import congeal.examples.flat._
-    new Application with componentImpl[Root]
+    import congeal.examples.alternate._
+    new Application with componentImpl[AltRoot2]
   }
   
 }

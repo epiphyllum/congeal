@@ -86,6 +86,7 @@ private[congeal] trait MacroImpl extends EnsureSimpleType with StaticSymbolLooku
     "congeal.hidden." + macroName + "." + t.typeSymbol.fullName
 
   private def introduceTopLevelClassDef(c: Context)(t: c.Type) {
+    //println(s"introduceTopLevelClassDef ${this.getClass} ${t.typeSymbol.fullName}")
     import c.universe._
     val parts = macroClassName(c)(t).split('.').toList
     val packageName = parts.dropRight(1).mkString(".")

@@ -1,7 +1,8 @@
 package congeal
 
 import language.experimental.macros
-import scala.reflect.macros.{ Context, Universe }
+import scala.reflect.macros.Context
+import scala.reflect.macros.Universe
 
 /** Contains helper methods shared by `componentApi` and `componentImpl` type macros. */
 private[congeal] trait UnderlyingTypesOfSupers extends StaticSymbolLookup {
@@ -14,17 +15,25 @@ private[congeal] trait UnderlyingTypesOfSupers extends StaticSymbolLookup {
   protected def underlyingTypesOfHasDependencySupers(c: Context)(t: c.Type): List[c.Type] =
     underlyingTypesOfSupers(c)(t, "hasDependency")
 
+  /** List of the underlying types of all the supers of the supplied type that are `standsInFor` implementations. */
+  protected def underlyingTypesOfStandsInForSupers(c: Context)(t: c.Type): List[c.Type] =
+    underlyingTypesOfSupers(c)(t, "standsInFor")
+
   private def underlyingTypesOfSupers(c: Context)(t: c.Type, macroName: String): List[c.Type] = {
-    val macroTypeName = t.typeSymbol.fullName
+    def tfn(t: c.Type): String = t.typeSymbol.fullName
+    //println(s"underlyingTypesOfSupers $macroName ${tfn(t)} bases = ${t.baseClasses map {x=>x.fullName}}")
+
     val macroPrefix = s"congeal.hidden.$macroName."
-    def tail = t.baseClasses.tail flatMap { s => underlyingTypesOfSupers(c)(s.typeSignature, macroName) }
-    if (macroTypeName.startsWith(macroPrefix)) {
-      val underlyingTypeName = macroTypeName.substring(macroPrefix.size)
-      val underlyingType = staticSymbol(c)(underlyingTypeName).typeSignature
-      underlyingType :: tail
+    t.baseClasses flatMap { typeSymbol =>
+      val macroTypeName = typeSymbol.fullName
+      if (macroTypeName.startsWith(macroPrefix)) {
+        val underlyingTypeName = macroTypeName.substring(macroPrefix.size)
+        val underlyingType = staticSymbol(c)(underlyingTypeName).typeSignature
+        Some(underlyingType)
+      }
+      else
+        None
     }
-    else
-      tail
   }
 
 }
