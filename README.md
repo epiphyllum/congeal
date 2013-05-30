@@ -18,10 +18,9 @@ Macros completed so far:
   - componentImpl[A]
   - hasDependency[A]
   - hasPart[A]
+  - standsInFor[A]
 
 Macros still to do:
-  - standsInFor[A] - partially implemented still to do:
-    - tests
   - mock[A]
   - hasPrivatePart[A]
 
