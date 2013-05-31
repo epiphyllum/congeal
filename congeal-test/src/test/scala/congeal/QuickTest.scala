@@ -14,9 +14,8 @@ class QuickTest {
   @Test
   def testQuick() {
 
-    import congeal.examples.flat._
-    import congeal.examples.alternate._
-    new Application with componentImpl[AltRoot2]
+    import congeal.examples.easymock._
+    new UServiceSpec {}
   }
   
 }

@@ -16,6 +16,7 @@ private[congeal] object ComponentApiMacroImpl extends MacroImpl with UnderlyingT
     //println(s"ComponentApiMacroImpl ${tfn(t)}")
 
     val standsInFors = underlyingTypesOfStandsInForSupers(c)(t)
+    val easyMocks = underlyingTypesOfEasyMockSupers(c)(t)
     val parts = {
       def standInsForPart(part: c.Type): List[c.Type] = underlyingTypesOfStandsInForSupers(c)(part) match {
         case Nil => part :: Nil
@@ -23,7 +24,7 @@ private[congeal] object ComponentApiMacroImpl extends MacroImpl with UnderlyingT
       }
       underlyingTypesOfHasPartSupers(c)(t).flatMap({ p => standInsForPart(p) }).toSet.toList
     }
-    val supers = (standsInFors ::: parts) map { s => ComponentApiMacroImpl.refToTopLevelClassDef(c)(s) }
+    val supers = (standsInFors ::: easyMocks ::: parts) map { s => ComponentApiMacroImpl.refToTopLevelClassDef(c)(s) }
 
     //supers foreach { s => println(s"super $s") }
 

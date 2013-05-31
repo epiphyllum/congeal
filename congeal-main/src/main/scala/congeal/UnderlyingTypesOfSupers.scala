@@ -19,6 +19,10 @@ private[congeal] trait UnderlyingTypesOfSupers extends StaticSymbolLookup {
   protected def underlyingTypesOfStandsInForSupers(c: Context)(t: c.Type): List[c.Type] =
     underlyingTypesOfSupers(c)(t, "standsInFor")
 
+  /** List of the underlying types of all the supers of the supplied type that are `easyMock` implementations. */
+  protected def underlyingTypesOfEasyMockSupers(c: Context)(t: c.Type): List[c.Type] =
+    underlyingTypesOfSupers(c)(t, "easyMock")
+
   private def underlyingTypesOfSupers(c: Context)(t: c.Type, macroName: String): List[c.Type] = {
     def tfn(t: c.Type): String = t.typeSymbol.fullName
     //println(s"underlyingTypesOfSupers $macroName ${tfn(t)} bases = ${t.baseClasses map {x=>x.fullName}}")

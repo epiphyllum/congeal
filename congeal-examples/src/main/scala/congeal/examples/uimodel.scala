@@ -1,7 +1,8 @@
 package congeal.examples.uimodel
 
 import congeal._
-import congeal.examples.flat._
+
+case class U(uName: String)
 
 trait UiReadOnlyModel {
   def getUOption: Option[U]
@@ -21,8 +22,20 @@ trait UiModel extends
   }
 }
 
+trait UiView extends hasDependency[UiReadOnlyModel] {
+  def init: Unit = println("hi from initView")
+}
+
+trait UiController extends
+  hasDependency[UiWriteOnlyModel] with
+  hasDependency[UiView] {
+  def init: Unit = println("hi from initController")
+}
+
 trait Root extends
-  hasPart[UiModel]
+  hasPart[UiModel] with
+  hasPart[UiView] with
+  hasPart[UiController]
 
 trait Application extends componentApi[Root] {
   println(uiReadOnlyModel.getUOption)
@@ -32,7 +45,7 @@ trait Application extends componentApi[Root] {
 
 /* outputs
 None
-Some(T(testTName))
+Some(U(uName))
 */
 object ApplicationTest extends App {
   new Application with componentImpl[Root]

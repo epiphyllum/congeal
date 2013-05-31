@@ -22,6 +22,7 @@ Macros completed so far:
 
 Macros still to do:
   - mock[A]
+    - initial implementation of easyMock[A]. not easy to generalize, mostly because requires refactoring
   - hasPrivatePart[A]
 
 Other TODO items:

@@ -46,4 +46,9 @@ package object congeal {
     */
   type standsInFor[A] = macro StandsInForMacroImpl.refToTopLevelClassDefEnsureSimple[A]
 
+  /** Indicates an EasyMock replacement component for the supplied type `A`.
+    * @tparam A the base type of the mock component
+    */
+  type easyMock[A] = macro EasyMockMacroImpl.refToTopLevelClassDefEnsureSimple[A]
+
 }

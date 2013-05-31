@@ -13,6 +13,8 @@ object BuildSettings {
   )
 }
 
+// FIX: DRY the libraryDependencies
+
 object MyBuild extends Build {
   import BuildSettings._
 
@@ -26,14 +28,17 @@ object MyBuild extends Build {
     "congeal-main",
     file("congeal-main"),
     settings = buildSettings ++ Seq(
-      libraryDependencies <+= (scalaVersion)("org.scala-lang.macro-paradise" % "scala-reflect" % _))
+      libraryDependencies <+= (scalaVersion)("org.scala-lang.macro-paradise" % "scala-reflect" % _),
+      libraryDependencies += "org.easymock" % "easymock" % "3.1" % "optional")
   )
 
   lazy val examples = Project(
     "congeal-examples",
     file("congeal-examples"),
     settings = buildSettings ++ Seq(
-      libraryDependencies <+= (scalaVersion)("org.scala-lang.macro-paradise" % "scala-reflect" % _))
+      libraryDependencies <+= (scalaVersion)("org.scala-lang.macro-paradise" % "scala-reflect" % _),
+      libraryDependencies += "org.easymock" % "easymock" % "3.1",
+      libraryDependencies += "junit" % "junit" % "4.11")
   ) dependsOn(main)
 
   lazy val test = Project(
@@ -41,6 +46,7 @@ object MyBuild extends Build {
     file("congeal-test"),
     settings = buildSettings ++ Seq(
       libraryDependencies += "com.novocode" % "junit-interface" % "0.10-M3",
+      libraryDependencies += "org.easymock" % "easymock" % "3.1", // not used here yet
       libraryDependencies += "junit" % "junit" % "4.11")
   ) dependsOn(main, examples)
 }
