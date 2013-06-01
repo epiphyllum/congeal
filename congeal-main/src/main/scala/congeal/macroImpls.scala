@@ -1,19 +1,18 @@
 package congeal
 
 import language.experimental.macros
-
 import scala.reflect.macros.Context
 
 private[congeal] object macroImpls {
   
   def api[T: c.WeakTypeTag](c: Context): c.Tree =
-    ApiMacroImpl.refToTopLevelClassDefEnsureSimple[T](c)
+    new ApiMacroImpl().refToTopLevelClassDefEnsureSimple[T](c)
 
   def impl[T: c.WeakTypeTag](c: Context): c.Tree =
-    ImplMacroImpl.refToTopLevelClassDefEnsureSimple[T](c)
+    new ImplMacroImpl().refToTopLevelClassDefEnsureSimple[T](c)
 
   def componentApi[T: c.WeakTypeTag](c: Context): c.Tree =
-    ComponentApiMacroImpl.refToTopLevelClassDefEnsureSimple[T](c)
+    new ComponentApiMacroImpl().refToTopLevelClassDefEnsureSimple[T](c)
 
   def componentImpl[T: c.WeakTypeTag](c: Context): c.Tree =
     ComponentImplMacroImpl.refToTopLevelClassDefEnsureSimple[T](c)

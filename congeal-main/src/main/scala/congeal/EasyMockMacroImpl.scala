@@ -18,7 +18,7 @@ private[congeal] object EasyMockMacroImpl extends MacroImpl {
       implClassName,
       List(),
       Template(
-        List(ApiMacroImpl.refToTopLevelClassDef(c)(t)),
+        List(new ApiMacroImpl().refToTopLevelClassDef(c)(t)),
         emptyValDef,
         List()))
   }
