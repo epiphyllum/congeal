@@ -5,7 +5,7 @@ import scala.reflect.macros.Context
 import scala.reflect.macros.Universe
 
 /** Contains the implementation for the `hasDependency` type macro. */
-private[congeal] object HasDependencyMacroImpl extends MacroImpl {
+private[congeal] class HasDependencyMacroImpl extends MacroImpl {
 
   override protected val macroName = "hasDependency"
 

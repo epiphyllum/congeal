@@ -5,7 +5,7 @@ import scala.reflect.macros.Context
 import scala.reflect.macros.Universe
 
 /** Contains the implementation for the `hasPart` type macro. */
-private[congeal] object HasPartMacroImpl extends MacroImpl {
+private[congeal] class HasPartMacroImpl extends MacroImpl {
 
   override protected val macroName = "hasPart"
 

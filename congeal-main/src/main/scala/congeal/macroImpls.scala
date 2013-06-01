@@ -15,18 +15,18 @@ private[congeal] object macroImpls {
     new ComponentApiMacroImpl().refToTopLevelClassDefEnsureSimple[T](c)
 
   def componentImpl[T: c.WeakTypeTag](c: Context): c.Tree =
-    ComponentImplMacroImpl.refToTopLevelClassDefEnsureSimple[T](c)
+    new ComponentImplMacroImpl().refToTopLevelClassDefEnsureSimple[T](c)
 
   def hasDependency[T: c.WeakTypeTag](c: Context): c.Tree =
-    HasDependencyMacroImpl.refToTopLevelClassDefEnsureSimple[T](c)
+    new HasDependencyMacroImpl().refToTopLevelClassDefEnsureSimple[T](c)
 
   def hasPart[T: c.WeakTypeTag](c: Context): c.Tree =
-    HasPartMacroImpl.refToTopLevelClassDefEnsureSimple[T](c)
+    new HasPartMacroImpl().refToTopLevelClassDefEnsureSimple[T](c)
 
   def standsInFor[T: c.WeakTypeTag](c: Context): c.Tree =
-    StandsInForMacroImpl.refToTopLevelClassDefEnsureSimple[T](c)
+    new StandsInForMacroImpl().refToTopLevelClassDefEnsureSimple[T](c)
 
   def easyMock[T: c.WeakTypeTag](c: Context): c.Tree =
-    EasyMockMacroImpl.refToTopLevelClassDefEnsureSimple[T](c)
+    new EasyMockMacroImpl().refToTopLevelClassDefEnsureSimple[T](c)
 
 }

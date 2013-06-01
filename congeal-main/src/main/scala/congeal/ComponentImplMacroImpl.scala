@@ -4,7 +4,8 @@ import language.experimental.macros
 import scala.reflect.macros.{ Context, Universe }
 
 /** Contains the implementation for the `componentImpl` type macro. */
-private[congeal] object ComponentImplMacroImpl extends MacroImpl with UnderlyingTypesOfSupers with InjectableValNames with StaticSymbolLookup {
+private[congeal] class ComponentImplMacroImpl extends MacroImpl with
+  UnderlyingTypesOfSupers with InjectableValNames with StaticSymbolLookup {
 
   override protected val macroName = "componentImpl"
 
@@ -28,7 +29,7 @@ private[congeal] object ComponentImplMacroImpl extends MacroImpl with Underlying
     val supers =
       (injections map { i => new ComponentApiMacroImpl().refToTopLevelClassDef(c)(i) }) :::
       (easyMocks map { e => new ComponentApiMacroImpl().refToTopLevelClassDef(c)(e) }) :::
-      (parts map { p => ComponentImplMacroImpl.refToTopLevelClassDef(c)(p) })
+      (parts map { p => new ComponentImplMacroImpl().refToTopLevelClassDef(c)(p) })
 
     //supers foreach { s => println(s"super $s") }
 

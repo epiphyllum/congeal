@@ -5,7 +5,7 @@ import scala.reflect.macros.Context
 import scala.reflect.macros.Universe
 
 /** Contains the implementation for the `standsInFor` type macro. */
-private[congeal] object EasyMockMacroImpl extends MacroImpl {
+private[congeal] class EasyMockMacroImpl extends MacroImpl {
 
   override protected val macroName = "easyMock"
 
