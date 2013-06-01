@@ -4,10 +4,19 @@ import language.experimental.macros
 import scala.reflect.macros.Context
 import scala.reflect.macros.Universe
 
+private[congeal] object ApiMacroImpl {
+
+  def apply(c0: Context)(t0: c0.Type) = new ApiMacroImpl {
+    val c: c0.type = c0
+    val t = t0
+  }
+
+}
+
 // this is by far the nastiest macro impl, and i consider it a work in progress
 
 /** Contains the implementation for the `api` type macro. */
-private[congeal] class ApiMacroImpl extends MacroImpl {
+private[congeal] abstract class ApiMacroImpl extends MacroImpl {
 
   override protected val macroName = "api"
 

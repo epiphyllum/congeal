@@ -4,8 +4,17 @@ import language.experimental.macros
 import scala.reflect.macros.Context
 import scala.reflect.macros.Universe
 
+private[congeal] object HasPartMacroImpl {
+
+  def apply(c0: Context)(t0: c0.Type) = new HasPartMacroImpl {
+    val c: c0.type = c0
+    val t = t0
+  }
+
+}
+
 /** Contains the implementation for the `hasPart` type macro. */
-private[congeal] class HasPartMacroImpl extends MacroImpl {
+private[congeal] abstract class HasPartMacroImpl extends MacroImpl {
 
   override protected val macroName = "hasPart"
 

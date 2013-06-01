@@ -11,7 +11,10 @@ import scala.reflect.macros.Universe
   * Implementing classes must provide the `macroName`, for error reporting, and a method for
   * creating a `ClassDef` for an input `Type`.
   */
-private[congeal] trait MacroImpl extends EnsureSimpleType with StaticSymbolLookup {
+private[congeal] abstract class MacroImpl extends EnsureSimpleType with StaticSymbolLookup {
+
+  protected val c: Context
+  protected val t: c.Type
 
   /** Produces a tree referencing a hidden, top-level `ClassDef` for the macro result. Ensures that
     * the type represented by the provided type parameter is a simple type.

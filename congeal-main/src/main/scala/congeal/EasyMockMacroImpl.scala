@@ -4,8 +4,17 @@ import language.experimental.macros
 import scala.reflect.macros.Context
 import scala.reflect.macros.Universe
 
+private[congeal] object EasyMockMacroImpl {
+
+  def apply(c0: Context)(t0: c0.Type) = new EasyMockMacroImpl {
+    val c: c0.type = c0
+    val t = t0
+  }
+
+}
+
 /** Contains the implementation for the `standsInFor` type macro. */
-private[congeal] class EasyMockMacroImpl extends MacroImpl {
+private[congeal] abstract class EasyMockMacroImpl extends MacroImpl {
 
   override protected val macroName = "easyMock"
 
@@ -18,7 +27,7 @@ private[congeal] class EasyMockMacroImpl extends MacroImpl {
       implClassName,
       List(),
       Template(
-        List(new ApiMacroImpl().refToTopLevelClassDef(c)(t)),
+        List(ApiMacroImpl(c)(t).refToTopLevelClassDef(c)(t)),
         emptyValDef,
         List()))
   }

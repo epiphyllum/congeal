@@ -4,8 +4,18 @@ import language.experimental.macros
 import scala.reflect.macros.Context
 import scala.reflect.macros.Universe
 
+private[congeal] object ComponentApiMacroImpl {
+
+  def apply(c0: Context)(t0: c0.Type) = new ComponentApiMacroImpl {
+    val c: c0.type = c0
+    val t = t0
+  }
+
+}
+
 /** Contains the implementation for the `componentApi` type macro. */
-private[congeal] class ComponentApiMacroImpl extends MacroImpl with UnderlyingTypesOfSupers with InjectableValNames {
+private[congeal] abstract class ComponentApiMacroImpl extends MacroImpl with
+  UnderlyingTypesOfSupers with InjectableValNames {
 
   override protected val macroName = "componentApi"
 
@@ -25,7 +35,7 @@ private[congeal] class ComponentApiMacroImpl extends MacroImpl with UnderlyingTy
       underlyingTypesOfHasPartSupers(c)(t).flatMap({ p => standInsForPart(p) }).toSet.toList
     }
     val supers = (standsInFors ::: easyMocks ::: parts) map {
-      s => new ComponentApiMacroImpl().refToTopLevelClassDef(c)(s)
+      s => ComponentApiMacroImpl(c)(s).refToTopLevelClassDef(c)(s)
     }
 
     //supers foreach { s => println(s"super $s") }
@@ -47,7 +57,7 @@ private[congeal] class ComponentApiMacroImpl extends MacroImpl with UnderlyingTy
                injectableValName(c)(i),
                List(),
                List(),
-               new ApiMacroImpl().refToTopLevelClassDef(c)(i),
+               ApiMacroImpl(c)(i).refToTopLevelClassDef(c)(i),
                EmptyTree)
       }
     }

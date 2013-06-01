@@ -5,28 +5,30 @@ import scala.reflect.macros.Context
 
 private[congeal] object macroImpls {
   
+  private def t[T: c.WeakTypeTag](c: Context): c.Type = c.universe.weakTypeOf[T]
+
   def api[T: c.WeakTypeTag](c: Context): c.Tree =
-    new ApiMacroImpl().refToTopLevelClassDefEnsureSimple[T](c)
+    ApiMacroImpl(c)(t[T](c)).refToTopLevelClassDefEnsureSimple[T](c)
 
   def impl[T: c.WeakTypeTag](c: Context): c.Tree =
-    new ImplMacroImpl().refToTopLevelClassDefEnsureSimple[T](c)
+    ImplMacroImpl(c)(t[T](c)).refToTopLevelClassDefEnsureSimple[T](c)
 
   def componentApi[T: c.WeakTypeTag](c: Context): c.Tree =
-    new ComponentApiMacroImpl().refToTopLevelClassDefEnsureSimple[T](c)
+    ComponentApiMacroImpl(c)(t[T](c)).refToTopLevelClassDefEnsureSimple[T](c)
 
   def componentImpl[T: c.WeakTypeTag](c: Context): c.Tree =
-    new ComponentImplMacroImpl().refToTopLevelClassDefEnsureSimple[T](c)
+    ComponentImplMacroImpl(c)(t[T](c)).refToTopLevelClassDefEnsureSimple[T](c)
 
   def hasDependency[T: c.WeakTypeTag](c: Context): c.Tree =
-    new HasDependencyMacroImpl().refToTopLevelClassDefEnsureSimple[T](c)
+    HasDependencyMacroImpl(c)(t[T](c)).refToTopLevelClassDefEnsureSimple[T](c)
 
   def hasPart[T: c.WeakTypeTag](c: Context): c.Tree =
-    new HasPartMacroImpl().refToTopLevelClassDefEnsureSimple[T](c)
+    HasPartMacroImpl(c)(t[T](c)).refToTopLevelClassDefEnsureSimple[T](c)
 
   def standsInFor[T: c.WeakTypeTag](c: Context): c.Tree =
-    new StandsInForMacroImpl().refToTopLevelClassDefEnsureSimple[T](c)
+    StandsInForMacroImpl(c)(t[T](c)).refToTopLevelClassDefEnsureSimple[T](c)
 
   def easyMock[T: c.WeakTypeTag](c: Context): c.Tree =
-    new EasyMockMacroImpl().refToTopLevelClassDefEnsureSimple[T](c)
+    EasyMockMacroImpl(c)(t[T](c)).refToTopLevelClassDefEnsureSimple[T](c)
 
 }
