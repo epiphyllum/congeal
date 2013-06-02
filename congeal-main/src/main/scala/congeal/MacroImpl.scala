@@ -22,7 +22,7 @@ private[congeal] abstract class MacroImpl extends EnsureSimpleType with StaticSy
     * the type represented by the provided type parameter is a simple type.
     */
   def refToTopLevelClassDefEnsureSimple: c.Tree = {
-    ensureSimpleType(c)(t)
+    ensureSimpleType()
     if (c.hasErrors) {
       Ident(definitions.AnyRefClass)
     }
@@ -77,8 +77,7 @@ private[congeal] abstract class MacroImpl extends EnsureSimpleType with StaticSy
       typeTree(typeSymbol.asType.toType)
   }
 
-  private def topLevelClassDefIsDefined =
-    staticSymbol(c)(macroClassName) != c.universe.NoSymbol
+  private def topLevelClassDefIsDefined = staticSymbol(macroClassName) != NoSymbol
 
   private lazy val macroClassName =
     "congeal.hidden." + macroName + "." + t.typeSymbol.fullName

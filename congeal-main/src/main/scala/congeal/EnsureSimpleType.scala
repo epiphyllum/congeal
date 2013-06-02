@@ -6,24 +6,27 @@ import scala.reflect.macros.{ Context, Universe }
   * errors for any of the ways the type fails to be simple.
   */
 private[congeal] trait EnsureSimpleType extends SymbolPredicates {
+  self: MacroImpl =>
+
+  import c.universe._
 
   protected val macroName: String
 
-  protected def ensureSimpleType(c: Context)(t: c.Type) {
-    ensureTypeIsTrait(c)(t)
-    ensureTypeIsStatic(c)(t)
-    ensureNoNonPrivateThisInnerClasses(c)(t)
-    ensureNoSelfReferencingMembers(c)(t)
+  protected def ensureSimpleType() {
+    ensureTypeIsTrait()
+    ensureTypeIsStatic()
+    ensureNoNonPrivateThisInnerClasses()
+    ensureNoSelfReferencingMembers()
   }
 
-  private def ensureTypeIsTrait(c: Context)(t: c.Type) {
+  private def ensureTypeIsTrait() {
     val ts = t.typeSymbol
     if (! (ts.isClass && ts.asClass.isTrait)) {
       c.error(c.enclosingPosition, s"${ts.name} must be a trait in $macroName[${ts.name}]")
     }
   }
 
-  private def ensureTypeIsStatic(c: Context)(t: c.Type) {
+  private def ensureTypeIsStatic() {
     if (!t.typeSymbol.isStatic) {
       // "static" means not a member of a method or trait. only objects all the way up
       val ts = t.typeSymbol
@@ -31,7 +34,7 @@ private[congeal] trait EnsureSimpleType extends SymbolPredicates {
     }
   }
 
-  private def ensureNoNonPrivateThisInnerClasses(c: Context)(t: c.Type) {
+  private def ensureNoNonPrivateThisInnerClasses() {
     val ts = t.typeSymbol
     val nonPrivateThisInnerClasses = t.members.filter { symbol =>
       symbol.isClass && ! (symbol.isPrivate && symbol.privateWithin == ts)
@@ -41,8 +44,7 @@ private[congeal] trait EnsureSimpleType extends SymbolPredicates {
     }
   }
 
-  private def ensureNoSelfReferencingMembers(c: Context)(t: c.Type) {
-    import c.universe._
+  private def ensureNoSelfReferencingMembers() {
     val ts = t.typeSymbol
     def symbolIsValOrVar(s: Symbol) = s.isTerm && (s.asTerm.isVal || s.asTerm.isVar)
     def symbolIsPrivateThis(s: Symbol) = s.isPrivate && s.privateWithin == ts

@@ -27,22 +27,22 @@ private[congeal] abstract class ComponentImplMacroImpl extends MacroImpl with
   override def classDef(implClassName: c.TypeName): ClassDef = {
 
     // FIX: get the order of the easyMocks and the other stuff right
-    val easyMocks = underlyingTypesOfEasyMockSupers(c)(t)
+    val easyMocks = underlyingTypesOfEasyMockSupers(t)
 
     val injections = {
-      val standsInFors = underlyingTypesOfStandsInForSupers(c)(t)
+      val standsInFors = underlyingTypesOfStandsInForSupers(t)
       standsInFors match {
         case Nil => List(t)
         case sifs => sifs
       }
     }
-    val parts = underlyingTypesOfHasPartSupers(c)(t).reverse // need to reverse to get the overrides right
+    val parts = underlyingTypesOfHasPartSupers(t).reverse // need to reverse to get the overrides right
     val supers =
       (injections map { i => ComponentApiMacroImpl.refToTopLevelClassDef(c)(i) }) :::
       (easyMocks map { e => ComponentApiMacroImpl.refToTopLevelClassDef(c)(e) }) :::
       (parts map { p => ComponentImplMacroImpl.refToTopLevelClassDef(c)(p) })
 
-    val dependencies = underlyingTypesOfHasDependencySupers(c)(t)
+    val dependencies = underlyingTypesOfHasDependencySupers(t)
     val selfTypes = dependencies.map {
       d => ComponentApiMacroImpl(c)(d).refToTopLevelClassDef
     }
@@ -149,7 +149,7 @@ private[congeal] abstract class ComponentImplMacroImpl extends MacroImpl with
 
   private def easyMockValDefs(easyMocks: List[c.Type]): List[ValDef] = {
     val expandedEasyMocks = easyMocks flatMap { e =>
-      underlyingTypesOfHasPartSupers(c)(e) match {
+      underlyingTypesOfHasPartSupers(e) match {
         case Nil => List(e)
         case uts => uts
       }

@@ -11,8 +11,8 @@ private[congeal] object ComponentApiMacroImpl {
     val t = t0
   }
 
-  def refToTopLevelClassDef(c0: Context)(t0: c0.Type): c0.Tree = {
-    apply(c0)(t0).refToTopLevelClassDef
+  def refToTopLevelClassDef(c: Context)(t: c.Type): c.Tree = {
+    apply(c)(t).refToTopLevelClassDef
   }
 
 }
@@ -26,24 +26,18 @@ private[congeal] abstract class ComponentApiMacroImpl extends MacroImpl with
   override protected val macroName = "componentApi"
 
   override def classDef(implClassName: c.TypeName): ClassDef = {
-
-    def tfn(t: c.Type): String = t.typeSymbol.fullName
-    //println(s"ComponentApiMacroImpl ${tfn(t)}")
-
-    val standsInFors = underlyingTypesOfStandsInForSupers(c)(t)
-    val easyMocks = underlyingTypesOfEasyMockSupers(c)(t)
+    val standsInFors = underlyingTypesOfStandsInForSupers(t)
+    val easyMocks = underlyingTypesOfEasyMockSupers(t)
     val parts = {
-      def standInsForPart(part: c.Type): List[c.Type] = underlyingTypesOfStandsInForSupers(c)(part) match {
+      def standInsForPart(part: c.Type): List[c.Type] = underlyingTypesOfStandsInForSupers(part) match {
         case Nil => part :: Nil
         case sifs => sifs
       }
-      underlyingTypesOfHasPartSupers(c)(t).flatMap({ p => standInsForPart(p) }).toSet.toList
+      underlyingTypesOfHasPartSupers(t).flatMap({ p => standInsForPart(p) }).toSet.toList
     }
     val supers = (standsInFors ::: easyMocks ::: parts) map {
       s => ComponentApiMacroImpl(c)(s).refToTopLevelClassDef
     }
-
-    //supers foreach { s => println(s"super $s") }
 
     def typeHasEmptyApi = t.declarations.filter(symbolIsNonConstructorMethod(c)(_)).isEmpty
     val body = if (typeHasEmptyApi) {
@@ -55,7 +49,6 @@ private[congeal] abstract class ComponentApiMacroImpl extends MacroImpl with
         case sifs => sifs
       }
       injections map { i =>
-        //println(s"injection ${tfn(i)}")
 
         // lazy val sif: api[Sif]
         DefDef(Modifiers(Flag.DEFERRED),
@@ -66,8 +59,6 @@ private[congeal] abstract class ComponentApiMacroImpl extends MacroImpl with
                EmptyTree)
       }
     }
-
-    //println(s"LEAVE ComponentApiMacroImpl ${tfn(t)}")
 
     // trait componentApi[T] { <body> }
     ClassDef(

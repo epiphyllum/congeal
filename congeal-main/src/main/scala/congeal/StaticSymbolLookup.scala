@@ -9,24 +9,23 @@ import scala.reflect.internal.MissingRequirementError
   * It seems like i should be able to do this with c.mirror.staticClass, but I can't.
   */
 trait StaticSymbolLookup {
+  self: MacroImpl =>
 
-  protected def staticSymbol(c: Context)(name: String): c.Symbol =
-    staticSymbolByParts(c)(name.split('.').toList)
+  import c.universe._
 
-  private def staticSymbolByParts(c: Context)(parts: List[String]): c.Symbol = {
-    //println(s"staticSymbolByParts $parts")
-    import c.universe._
+  protected def staticSymbol(name: String): c.Symbol =
+    staticSymbolByParts(name.split('.').toList)
+
+  private def staticSymbolByParts(parts: List[String]): c.Symbol = {
     if (parts.size == 1) {
       c.mirror.staticClass(parts.head)
     }
     else {
-      staticSymbolByParts0(c)(outermostSymbol(c)(parts.head), parts.tail)
+      staticSymbolByParts0(outermostSymbol(parts.head), parts.tail)
     }
   }
 
-  private def staticSymbolByParts0(c: Context)(outer: c.Symbol, parts: List[String]): c.Symbol = {
-    //println(s"staticSymbolByParts0 $outer $parts")
-    import c.universe._
+  private def staticSymbolByParts0(outer: c.Symbol, parts: List[String]): c.Symbol = {
     val outerClass = if (outer.isModule) outer.asModule.moduleClass else outer
     if (parts.size == 1) {
       outerClass.typeSignature.member(TypeName(parts.head))
@@ -39,13 +38,13 @@ trait StaticSymbolLookup {
         NoSymbol
       }
       else {
-        val x = staticSymbolByParts0(c)(inner, parts.tail)
+        val x = staticSymbolByParts0(inner, parts.tail)
         x
       }
     }
   }
 
-  private def outermostSymbol(c: Context)(name: String): c.Symbol = {
+  private def outermostSymbol(name: String): c.Symbol = {
     try {
       c.mirror.staticPackage(name)
     }
