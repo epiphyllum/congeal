@@ -20,13 +20,11 @@ private[congeal] object ApiMacroImpl {
 
 /** Contains the implementation for the `api` type macro. */
 private[congeal] abstract class ApiMacroImpl extends MacroImpl {
+  import c.universe._
 
   override protected val macroName = "api"
 
-  def foo: c.Tree = null
-
-  override def classDef(c: Context)(t: c.Type, implClassName: c.TypeName): c.universe.ClassDef = {
-    import c.universe._
+  override def classDef(implClassName: c.TypeName): ClassDef = {
 
     // FIX: see if you can avoid using internalSymbolTable here
     val internalSymbolTable = c.universe.asInstanceOf[scala.reflect.internal.SymbolTable]

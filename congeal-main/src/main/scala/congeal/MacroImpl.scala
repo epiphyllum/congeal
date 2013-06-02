@@ -35,8 +35,8 @@ private[congeal] abstract class MacroImpl extends EnsureSimpleType with StaticSy
     * that the type represented by the provided type parameter is a simple type.
     */
   def refToTopLevelClassDef: c.Tree = {
-    if (!topLevelClassDefIsDefined(c)(t)) {
-      introduceTopLevelClassDef(c)(t)
+    if (!topLevelClassDefIsDefined) {
+      introduceTopLevelClassDef
     }
     val parts = fullNameParts(c)(t)
     val packageParts = parts.dropRight(1)
@@ -60,7 +60,7 @@ private[congeal] abstract class MacroImpl extends EnsureSimpleType with StaticSy
   }
 
   /** A `ClassDef` to represent the macro result for the supplied input type. */
-  def classDef(c: Context)(t: c.Type, implClassName: c.TypeName): c.universe.ClassDef
+  def classDef(implClassName: c.TypeName): ClassDef
 
   /** The name of the macro. for error reporting. */
   protected val macroName: String
@@ -80,20 +80,19 @@ private[congeal] abstract class MacroImpl extends EnsureSimpleType with StaticSy
     }
   }
 
-  private def topLevelClassDefIsDefined(c: Context)(t: c.Type): Boolean = {
+  private def topLevelClassDefIsDefined =
     staticSymbol(c)(macroClassName(c)(t)) != c.universe.NoSymbol
-  }
 
   private def macroClassName(c: Context)(t: c.Type) =
     "congeal.hidden." + macroName + "." + t.typeSymbol.fullName
 
-  private def introduceTopLevelClassDef(c: Context)(t: c.Type) {
+  private def introduceTopLevelClassDef {
     //println(s"introduceTopLevelClassDef ${this.getClass} ${t.typeSymbol.fullName}")
     import c.universe._
     val parts = macroClassName(c)(t).split('.').toList
     val packageName = parts.dropRight(1).mkString(".")
     val className = parts.last
-    val clazz = classDef(c)(t, TypeName(className).toTypeName)
+    val clazz = classDef(TypeName(className).toTypeName)
     c.introduceTopLevel(packageName, clazz)
   }
 

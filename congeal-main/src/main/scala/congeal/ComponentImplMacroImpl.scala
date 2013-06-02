@@ -20,13 +20,11 @@ private[congeal] object ComponentImplMacroImpl {
 private[congeal] abstract class ComponentImplMacroImpl extends MacroImpl with
   UnderlyingTypesOfSupers with InjectableValNames with StaticSymbolLookup {
 
+  import c.universe._
+
   override protected val macroName = "componentImpl"
 
-  override def classDef(c: Context)(t: c.Type, implClassName: c.TypeName): c.universe.ClassDef = {
-    import c.universe._
-
-    def tfn(t: c.Type): String = t.typeSymbol.fullName
-    //println(s"ComponentImplMacroImpl ${tfn(t)}")
+  override def classDef(implClassName: c.TypeName): ClassDef = {
 
     // FIX: get the order of the easyMocks and the other stuff right
     val easyMocks = underlyingTypesOfEasyMockSupers(c)(t)
@@ -44,8 +42,6 @@ private[congeal] abstract class ComponentImplMacroImpl extends MacroImpl with
       (easyMocks map { e => ComponentApiMacroImpl.refToTopLevelClassDef(c)(e) }) :::
       (parts map { p => ComponentImplMacroImpl.refToTopLevelClassDef(c)(p) })
 
-    //supers foreach { s => println(s"super $s") }
-
     val dependencies = underlyingTypesOfHasDependencySupers(c)(t)
     val selfTypes = dependencies.map {
       d => ComponentApiMacroImpl(c)(d).refToTopLevelClassDef
@@ -55,16 +51,14 @@ private[congeal] abstract class ComponentImplMacroImpl extends MacroImpl with
     val init = DefDef(Modifiers(), TermName("$init$"), List(), List(List()), TypeTree(), Block(List(), Literal(Constant(()))))
     val body = if (typeHasEmptyApi) {
       init ::
-      easyMockValDefs(c)(easyMocks)
+      easyMockValDefs(easyMocks)
     }
     else {
       init ::
-      injectionImplValDef(c)(t, implClassName, injections, dependencies) ::
-      injectionValDefs(c)(injections) :::
-      easyMockValDefs(c)(easyMocks)
+      injectionImplValDef(implClassName, injections, dependencies) ::
+      injectionValDefs(injections) :::
+      easyMockValDefs(easyMocks)
     }
-
-    //println(s"LEAVE ComponentImplMacroImpl ${tfn(t)}")
 
     // trait componentImpl[T] extends <supers> {
     //   <body>
@@ -89,13 +83,7 @@ private[congeal] abstract class ComponentImplMacroImpl extends MacroImpl with
   //   ...
   //   lazy val depN: api[DepN] = outer.depN
   // }
-  private def injectionImplValDef(
-    c: Context)(
-    t: c.Type,
-    implClassName: c.TypeName,
-    injections: List[c.Type],
-    dependencies: List[c.Type]): c.universe.ValDef = {
-    import c.universe._
+  private def injectionImplValDef(implClassName: c.TypeName, injections: List[c.Type], dependencies: List[c.Type]): ValDef = {
 
     // api[Sif1] with api[Sif2] with ... with api[SifN]
     val injectionsApi = CompoundTypeTree(Template(
@@ -145,10 +133,7 @@ private[congeal] abstract class ComponentImplMacroImpl extends MacroImpl with
         Apply(Select(New(Ident(TypeName("$anon"))), nme.CONSTRUCTOR), List())))
   }
 
-  private def injectionValDefs(
-    c: Context)(
-    injections: List[c.Type]): List[c.universe.ValDef] = {
-    import c.universe._
+  private def injectionValDefs(injections: List[c.Type]): List[ValDef] = {
     injections map { i =>
 
       // override lazy val i: api[I] = injectionImpl
@@ -162,8 +147,7 @@ private[congeal] abstract class ComponentImplMacroImpl extends MacroImpl with
     }
   }
 
-  private def easyMockValDefs(c: Context)(easyMocks: List[c.Type]): List[c.universe.ValDef] = {
-    import c.universe._
+  private def easyMockValDefs(easyMocks: List[c.Type]): List[ValDef] = {
     val expandedEasyMocks = easyMocks flatMap { e =>
       underlyingTypesOfHasPartSupers(c)(e) match {
         case Nil => List(e)

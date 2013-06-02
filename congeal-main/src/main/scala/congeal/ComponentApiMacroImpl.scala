@@ -21,10 +21,11 @@ private[congeal] object ComponentApiMacroImpl {
 private[congeal] abstract class ComponentApiMacroImpl extends MacroImpl with
   UnderlyingTypesOfSupers with InjectableValNames {
 
+  import c.universe._
+
   override protected val macroName = "componentApi"
 
-  override def classDef(c: Context)(t: c.Type, implClassName: c.TypeName): c.universe.ClassDef = {
-    import c.universe._
+  override def classDef(implClassName: c.TypeName): ClassDef = {
 
     def tfn(t: c.Type): String = t.typeSymbol.fullName
     //println(s"ComponentApiMacroImpl ${tfn(t)}")

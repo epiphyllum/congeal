@@ -16,10 +16,11 @@ private[congeal] object HasDependencyMacroImpl {
 /** Contains the implementation for the `hasDependency` type macro. */
 private[congeal] abstract class HasDependencyMacroImpl extends MacroImpl {
 
+  import c.universe._
+
   override protected val macroName = "hasDependency"
 
-  override def classDef(c: Context)(t: c.Type, implClassName: c.TypeName): c.universe.ClassDef = {
-    import c.universe._
+  override def classDef(implClassName: c.TypeName): ClassDef = {
 
     // trait hasDependency[T] extends componentApi[T]
     ClassDef(

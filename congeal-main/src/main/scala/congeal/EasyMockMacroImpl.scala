@@ -16,10 +16,11 @@ private[congeal] object EasyMockMacroImpl {
 /** Contains the implementation for the `standsInFor` type macro. */
 private[congeal] abstract class EasyMockMacroImpl extends MacroImpl {
 
+  import c.universe._
+
   override protected val macroName = "easyMock"
 
-  override def classDef(c: Context)(t: c.Type, implClassName: c.TypeName): c.universe.ClassDef = {
-    import c.universe._
+  override def classDef(implClassName: c.TypeName): ClassDef = {
 
     // trait easyMock[T] extends api[T]
     ClassDef(

@@ -16,10 +16,11 @@ private[congeal] object StandsInForMacroImpl {
 /** Contains the implementation for the `standsInFor` type macro. */
 private[congeal] abstract class StandsInForMacroImpl extends MacroImpl {
 
+  import c.universe._
+
   override protected val macroName = "standsInFor"
 
-  override def classDef(c: Context)(t: c.Type, implClassName: c.TypeName): c.universe.ClassDef = {
-    import c.universe._
+  override def classDef(implClassName: c.TypeName): ClassDef = {
 
     // trait standsInFor[T] extends api[T]
     ClassDef(

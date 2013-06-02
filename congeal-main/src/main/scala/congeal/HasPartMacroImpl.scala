@@ -16,10 +16,11 @@ private[congeal] object HasPartMacroImpl {
 /** Contains the implementation for the `hasPart` type macro. */
 private[congeal] abstract class HasPartMacroImpl extends MacroImpl {
 
+  import c.universe._
+
   override protected val macroName = "hasPart"
 
-  override def classDef(c: Context)(t: c.Type, implClassName: c.TypeName): c.universe.ClassDef = {
-    import c.universe._
+  override def classDef(implClassName: c.TypeName): ClassDef = {
 
     // trait hasPart[T]
     ClassDef(
