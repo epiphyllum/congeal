@@ -11,6 +11,9 @@ private[congeal] object ApiMacroImpl {
     val t = t0
   }
 
+  def refToTopLevelClassDef(c: Context)(t: c.Type): c.Tree =
+    apply(c)(t).refToTopLevelClassDef
+
 }
 
 // this is by far the nastiest macro impl, and i consider it a work in progress
@@ -19,6 +22,8 @@ private[congeal] object ApiMacroImpl {
 private[congeal] abstract class ApiMacroImpl extends MacroImpl {
 
   override protected val macroName = "api"
+
+  def foo: c.Tree = null
 
   override def classDef(c: Context)(t: c.Type, implClassName: c.TypeName): c.universe.ClassDef = {
     import c.universe._

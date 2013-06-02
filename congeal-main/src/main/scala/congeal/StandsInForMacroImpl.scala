@@ -27,7 +27,7 @@ private[congeal] abstract class StandsInForMacroImpl extends MacroImpl {
       implClassName,
       List(),
       Template(
-        List(ApiMacroImpl(c)(t).refToTopLevelClassDef(c)(t)),
+        List(ApiMacroImpl(c)(t).refToTopLevelClassDef),
         emptyValDef,
         List()))
   }

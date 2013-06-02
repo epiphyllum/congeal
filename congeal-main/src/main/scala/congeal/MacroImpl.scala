@@ -16,26 +16,25 @@ private[congeal] abstract class MacroImpl extends EnsureSimpleType with StaticSy
   protected val c: Context
   protected val t: c.Type
 
+  import c.universe._
+
   /** Produces a tree referencing a hidden, top-level `ClassDef` for the macro result. Ensures that
     * the type represented by the provided type parameter is a simple type.
     */
-  def refToTopLevelClassDefEnsureSimple[T: c.WeakTypeTag](c: Context): c.Tree = {
-    import c.universe._
-    val t: Type = weakTypeOf[T]
+  def refToTopLevelClassDefEnsureSimple: c.Tree = {
     ensureSimpleType(c)(t)
     if (c.hasErrors) {
       Ident(definitions.AnyRefClass)
     }
     else {
-      refToTopLevelClassDef(c)(t)
+      refToTopLevelClassDef
     }
   }
 
   /** Produces a tree referencing a hidden, top-level `ClassDef` for the macro result. May assume
     * that the type represented by the provided type parameter is a simple type.
     */
-  def refToTopLevelClassDef(c: Context)(t: c.Type): c.Tree = {
-    import c.universe._
+  def refToTopLevelClassDef: c.Tree = {
     if (!topLevelClassDefIsDefined(c)(t)) {
       introduceTopLevelClassDef(c)(t)
     }

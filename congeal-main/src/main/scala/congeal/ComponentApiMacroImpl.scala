@@ -11,6 +11,10 @@ private[congeal] object ComponentApiMacroImpl {
     val t = t0
   }
 
+  def refToTopLevelClassDef(c0: Context)(t0: c0.Type): c0.Tree = {
+    apply(c0)(t0).refToTopLevelClassDef
+  }
+
 }
 
 /** Contains the implementation for the `componentApi` type macro. */
@@ -35,7 +39,7 @@ private[congeal] abstract class ComponentApiMacroImpl extends MacroImpl with
       underlyingTypesOfHasPartSupers(c)(t).flatMap({ p => standInsForPart(p) }).toSet.toList
     }
     val supers = (standsInFors ::: easyMocks ::: parts) map {
-      s => ComponentApiMacroImpl(c)(s).refToTopLevelClassDef(c)(s)
+      s => ComponentApiMacroImpl(c)(s).refToTopLevelClassDef
     }
 
     //supers foreach { s => println(s"super $s") }
@@ -57,7 +61,7 @@ private[congeal] abstract class ComponentApiMacroImpl extends MacroImpl with
                injectableValName(c)(i),
                List(),
                List(),
-               ApiMacroImpl(c)(i).refToTopLevelClassDef(c)(i),
+               ApiMacroImpl(c)(i).refToTopLevelClassDef,
                EmptyTree)
       }
     }

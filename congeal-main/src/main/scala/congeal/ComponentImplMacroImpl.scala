@@ -10,6 +10,10 @@ private[congeal] object ComponentImplMacroImpl {
     val t = t0
   }
 
+  def refToTopLevelClassDef(c0: Context)(t0: c0.Type): c0.Tree = {
+    apply(c0)(t0).refToTopLevelClassDef
+  }
+
 }
 
 /** Contains the implementation for the `componentImpl` type macro. */
@@ -36,15 +40,15 @@ private[congeal] abstract class ComponentImplMacroImpl extends MacroImpl with
     }
     val parts = underlyingTypesOfHasPartSupers(c)(t).reverse // need to reverse to get the overrides right
     val supers =
-      (injections map { i => ComponentApiMacroImpl(c)(i).refToTopLevelClassDef(c)(i) }) :::
-      (easyMocks map { e => ComponentApiMacroImpl(c)(e).refToTopLevelClassDef(c)(e) }) :::
-      (parts map { p => ComponentImplMacroImpl(c)(p).refToTopLevelClassDef(c)(p) })
+      (injections map { i => ComponentApiMacroImpl.refToTopLevelClassDef(c)(i) }) :::
+      (easyMocks map { e => ComponentApiMacroImpl.refToTopLevelClassDef(c)(e) }) :::
+      (parts map { p => ComponentImplMacroImpl.refToTopLevelClassDef(c)(p) })
 
     //supers foreach { s => println(s"super $s") }
 
     val dependencies = underlyingTypesOfHasDependencySupers(c)(t)
     val selfTypes = dependencies.map {
-      d => ComponentApiMacroImpl(c)(d).refToTopLevelClassDef(c)(d)
+      d => ComponentApiMacroImpl(c)(d).refToTopLevelClassDef
     }
 
     def typeHasEmptyApi = t.declarations.filter(symbolIsNonConstructorMethod(c)(_)).isEmpty
@@ -95,7 +99,7 @@ private[congeal] abstract class ComponentImplMacroImpl extends MacroImpl with
 
     // api[Sif1] with api[Sif2] with ... with api[SifN]
     val injectionsApi = CompoundTypeTree(Template(
-      injections map { i => ApiMacroImpl(c)(i).refToTopLevelClassDef(c)(i) },
+      injections map { i => ApiMacroImpl(c)(i).refToTopLevelClassDef },
       emptyValDef,
       List()))
 
@@ -135,7 +139,7 @@ private[congeal] abstract class ComponentImplMacroImpl extends MacroImpl with
             TypeName("$anon"),
             List(),
             Template(
-              List(ImplMacroImpl(c)(t).refToTopLevelClassDef(c)(t)),
+              List(ImplMacroImpl(c)(t).refToTopLevelClassDef),
               emptyValDef,
               constructor :: dependencyImpls))),
         Apply(Select(New(Ident(TypeName("$anon"))), nme.CONSTRUCTOR), List())))
@@ -151,7 +155,7 @@ private[congeal] abstract class ComponentImplMacroImpl extends MacroImpl with
       ValDef(
         Modifiers(Flag.OVERRIDE | Flag.LAZY),
         injectableValName(c)(i),
-        ApiMacroImpl(c)(i).refToTopLevelClassDef(c)(i),
+        ApiMacroImpl(c)(i).refToTopLevelClassDef,
         Block(
           List(),
           Ident(TermName("injectionImpl"))))
@@ -168,7 +172,7 @@ private[congeal] abstract class ComponentImplMacroImpl extends MacroImpl with
     }
     expandedEasyMocks map { e =>
 
-      val eApi = ApiMacroImpl(c)(e).refToTopLevelClassDef(c)(e)
+      val eApi = ApiMacroImpl.refToTopLevelClassDef(c)(e)
 
       // override lazy val e: api[E] = org.easymock.EasyMock.createMock[api[E]]
       ValDef(

@@ -26,7 +26,7 @@ private[congeal] abstract class HasDependencyMacroImpl extends MacroImpl {
       Modifiers(Flag.ABSTRACT | Flag.INTERFACE | Flag.DEFAULTPARAM),
       implClassName,
       List(),
-      Template(List(ComponentApiMacroImpl(c)(t).refToTopLevelClassDef(c)(t)),
+      Template(List(ComponentApiMacroImpl(c)(t).refToTopLevelClassDef),
                emptyValDef,
                List()))
   }
