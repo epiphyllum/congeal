@@ -28,7 +28,7 @@ private[congeal] abstract class ImplMacroImpl extends MacroImpl {
       List(),
       Template(
         List(
-          typeTree(c)(t),
+          typeTree(t),
           ApiMacroImpl(c)(t).refToTopLevelClassDef),
         emptyValDef,
         List(DefDef(Modifiers(), nme.CONSTRUCTOR, List(), List(List()), TypeTree(),

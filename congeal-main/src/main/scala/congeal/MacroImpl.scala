@@ -38,7 +38,7 @@ private[congeal] abstract class MacroImpl extends EnsureSimpleType with StaticSy
     if (!topLevelClassDefIsDefined) {
       introduceTopLevelClassDef
     }
-    val parts = fullNameParts(c)(t)
+    val parts = fullNameParts
     val packageParts = parts.dropRight(1)
     val className = parts.last
     if (packageParts.isEmpty) {
@@ -65,38 +65,31 @@ private[congeal] abstract class MacroImpl extends EnsureSimpleType with StaticSy
   /** The name of the macro. for error reporting. */
   protected val macroName: String
 
-  // TODO: consider move into a supporting traits
-  protected def typeTree(c: Context)(t: c.Type): c.Tree = {
-    import c.universe._
-    t match {
-      case TypeRef(pre, sym, args) if args.isEmpty =>
-        Select(Ident(pre.termSymbol), sym.name)
-      case TypeRef(pre, sym, args) if args.nonEmpty =>
-        AppliedTypeTree(
-          typeTree(c)(TypeRef(pre, sym, Nil)),
-          args map { a => typeTree(c)(a) })
-      case ClassInfoType(_, _, typeSymbol) =>
-        typeTree(c)(typeSymbol.asType.toType)
-    }
+  // TODO: consider moving typeTree into a supporting trait
+  protected def typeTree(t: c.Type): c.Tree = t match {
+    case TypeRef(pre, sym, args) if args.isEmpty =>
+      Select(Ident(pre.termSymbol), sym.name)
+    case TypeRef(pre, sym, args) if args.nonEmpty =>
+      AppliedTypeTree(
+        typeTree(TypeRef(pre, sym, Nil)),
+        args map { a => typeTree(a) })
+    case ClassInfoType(_, _, typeSymbol) =>
+      typeTree(typeSymbol.asType.toType)
   }
 
   private def topLevelClassDefIsDefined =
-    staticSymbol(c)(macroClassName(c)(t)) != c.universe.NoSymbol
+    staticSymbol(c)(macroClassName) != c.universe.NoSymbol
 
-  private def macroClassName(c: Context)(t: c.Type) =
+  private lazy val macroClassName =
     "congeal.hidden." + macroName + "." + t.typeSymbol.fullName
 
   private def introduceTopLevelClassDef {
-    //println(s"introduceTopLevelClassDef ${this.getClass} ${t.typeSymbol.fullName}")
-    import c.universe._
-    val parts = macroClassName(c)(t).split('.').toList
-    val packageName = parts.dropRight(1).mkString(".")
-    val className = parts.last
+    val packageName = fullNameParts.dropRight(1).mkString(".")
+    val className = fullNameParts.last
     val clazz = classDef(TypeName(className).toTypeName)
     c.introduceTopLevel(packageName, clazz)
   }
 
-  private def fullNameParts(c: Context)(t: c.Type): List[String] =
-    macroClassName(c)(t).split('.').toList
+  private lazy val fullNameParts: List[String] = macroClassName.split('.').toList
 
 }

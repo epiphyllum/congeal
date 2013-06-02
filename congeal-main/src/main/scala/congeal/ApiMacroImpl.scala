@@ -50,7 +50,7 @@ private[congeal] abstract class ApiMacroImpl extends MacroImpl {
         s.name,
         tparams,
         paramss,
-        typeTree(c)(method.returnType),
+        typeTree(method.returnType),
         EmptyTree)
     }
 
