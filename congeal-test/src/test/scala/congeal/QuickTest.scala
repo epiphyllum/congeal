@@ -14,8 +14,8 @@ class QuickTest {
   @Test
   def testQuick() {
 
-    import congeal.examples.easymock._
-    new UServiceSpec {}
+    import congeal.examples.privateparts._
+    new Application with componentImpl[Factory] {}
   }
   
 }

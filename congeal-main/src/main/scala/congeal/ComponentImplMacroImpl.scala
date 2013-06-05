@@ -36,7 +36,9 @@ private[congeal] abstract class ComponentImplMacroImpl extends MacroImpl with
         case sifs => sifs
       }
     }
-    val parts = underlyingTypesOfHasPartSupers(t).reverse // need to reverse to get the overrides right
+    val parts =
+      underlyingTypesOfHasPartSupers(t).reverse ::: // need to reverse to get the overrides right
+      underlyingTypesOfHasPrivatePartSupers(t).reverse // need to reverse to get the overrides right
     val supers =
       (injections map { i => ComponentApiMacroImpl.refToTopLevelClassDef(c)(i) }) :::
       (easyMocks map { e => ComponentApiMacroImpl.refToTopLevelClassDef(c)(e) }) :::

@@ -4,6 +4,9 @@ The general idea of the type macros I want to implement here is described in my
 blog post [Taming the Cake Pattern with Type
 Macros](http://scabl.blogspot.com/2013/03/cbdi-2.html).
 
+Fair warning: one of the three kepler commits from Jun 02 & Jun 03 broke my tests. examples still run.
+https://github.com/scalamacros/kepler/commits/master
+
 All macros require type `A` to be "simple", i.e., meet the following conditions:
 
   - is a trait
@@ -19,17 +22,18 @@ Macros completed so far:
   - hasDependency[A]
   - hasPart[A]
   - standsInFor[A]
+  - hasPrivatePart[A]
 
 Macros still to do:
   - mock[A]
-    - initial implementation of easyMock[A]. not easy to generalize, mostly because requires refactoring
-  - hasPrivatePart[A]
+    - have initial implementation of easyMock[A]. need to generalize
 
 Other TODO items:
   - cull TODO and FIX comments from the code
   - basic documentation
   - test/implement: A inherits from B, api[A] inherits from api[B]
   - test/implement: A inherits from B, impl[A] inherits from impl[B]
+  - test/implement: A inherits from B, component[A] inherits from component[B]
   - test/implement: A has vals
   - test/implement: A has non-public, non-private decls
 

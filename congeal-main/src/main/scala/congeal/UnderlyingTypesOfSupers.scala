@@ -12,6 +12,10 @@ private[congeal] trait UnderlyingTypesOfSupers extends StaticSymbolLookup {
   protected def underlyingTypesOfHasPartSupers(t: c.Type): List[c.Type] =
     underlyingTypesOfSupers(t, "hasPart")
 
+  /** List of the underlying types of all the supers of the supplied type that are `hasPrivatePart` implementations. */
+  protected def underlyingTypesOfHasPrivatePartSupers(t: c.Type): List[c.Type] =
+    underlyingTypesOfSupers(t, "hasPrivatePart")
+
   /** List of the underlying types of all the supers of the supplied type that are `hasDependency` implementations. */
   protected def underlyingTypesOfHasDependencySupers(t: c.Type): List[c.Type] =
     underlyingTypesOfSupers(t, "hasDependency")

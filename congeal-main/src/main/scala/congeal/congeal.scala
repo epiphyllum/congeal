@@ -41,6 +41,11 @@ package object congeal {
     */
   type hasPart[A] = macro macroImpls.hasPart[A]
 
+  /** Indicates a private sub-component for the supplied type `A`.
+    * @tparam A the base type of the private sub-component
+    */
+  type hasPrivatePart[A] = macro macroImpls.hasPrivatePart[A]
+
   /** Indicates a replacement component for the supplied type `A`.
     * @tparam A the base type of the replacement component
     */

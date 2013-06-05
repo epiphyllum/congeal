@@ -25,6 +25,9 @@ private[congeal] object macroImpls {
   def hasPart[T: c.WeakTypeTag](c: Context): c.Tree =
     HasPartMacroImpl(c)(t[T](c)).refToTopLevelClassDefEnsureSimple
 
+  def hasPrivatePart[T: c.WeakTypeTag](c: Context): c.Tree =
+    HasPrivatePartMacroImpl(c)(t[T](c)).refToTopLevelClassDefEnsureSimple
+
   def standsInFor[T: c.WeakTypeTag](c: Context): c.Tree =
     StandsInForMacroImpl(c)(t[T](c)).refToTopLevelClassDefEnsureSimple
 
