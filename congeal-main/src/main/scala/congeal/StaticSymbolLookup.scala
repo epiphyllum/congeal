@@ -8,7 +8,7 @@ import scala.reflect.internal.MissingRequirementError
   * 
   * It seems like i should be able to do this with c.mirror.staticClass, but I can't.
   */
-trait StaticSymbolLookup {
+private[congeal] trait StaticSymbolLookup {
   self: MacroImpl =>
 
   import c.universe._
