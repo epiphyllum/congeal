@@ -60,7 +60,7 @@ package object sc {
       // FIX: extract AppExecutionResult
       val compilePath = compilationResult.compileDir.getPath
       val command = List(
-        "bin/ivy-scala",
+        "bin/tempfix/ivy-scala",
         "-cp", compilePath + ":congeal-main/target/scala-2.11/classes",
         appName)
       val processExecution = new ProcessExecution(command)

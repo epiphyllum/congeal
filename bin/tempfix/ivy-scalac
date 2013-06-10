@@ -1,0 +1,10 @@
+#! /bin/sh
+
+LIBS=bin/tempfix/*.jar
+LIB_PATH=`echo $LIBS | tr ' ' ':'`
+
+java -Xmx256M -Xms32M \
+-Xbootclasspath/a:$LIB_PATH \
+-Dscala.usejavacp=true \
+scala.tools.nsc.Main \
+$*

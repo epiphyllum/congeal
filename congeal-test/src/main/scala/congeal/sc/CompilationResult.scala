@@ -50,7 +50,7 @@ class CompilationResult(private val source: String) {
 
   private def compileSourceFile(sourceFile: File, compileDir: File): (Int, String, String) = {
     val command = List(
-      "bin/ivy-scalac",
+      "bin/tempfix/ivy-scalac",
       "-deprecation",
       "-cp", "congeal-main/target/scala-2.11/classes",
       "-d", compileDir.getPath,
