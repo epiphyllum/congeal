@@ -5,7 +5,7 @@ object BuildSettings {
 
   val buildSettings = Defaults.defaultSettings ++ Seq(
     organization := "mscs.sullivan.john",
-    version := "0.3.0",
+    version := "0.4.0-SNAPSHOT",
     scalacOptions ++= Seq("-deprecation", "-feature"),
     scalaVersion := "2.11.0-SNAPSHOT",
     scalaOrganization := "org.scala-lang.macro-paradise",
