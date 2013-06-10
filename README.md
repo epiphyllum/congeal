@@ -39,6 +39,9 @@ Other TODO items:
   - test/implement: A inherits from B, component[A] inherits from component[B]
   - test/implement: A has vals
   - test/implement: A has non-public, non-private decls
+  - tests for type equivalence and other relations, such as:
+    - implicitly[api[A] =:= api[A]]
+    - implicitly[impl[A] <:< api[A]]
 
 Longer term ideas:
   - improved error messages

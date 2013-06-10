@@ -13,9 +13,13 @@ class QuickTest {
 
   @Test
   def testQuick() {
-
     import congeal.examples.privateparts._
-    new Application with componentImpl[Factory] {}
+    type T = congeal.hidden.api.congeal.examples.privateparts.SFactory
+    val t = new Application with componentImpl[Factory] {}
+
+    import com.softwaremill.debug.DebugConsole._
+    val a = 5
+    debugReport(t, T, a+7)
   }
   
 }
