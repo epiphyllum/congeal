@@ -1,8 +1,12 @@
-A collection of type macros intended for making Cake pattern more manageable.
+A collection of macro annotations for doing dependency injection.
+
+Under the hood, congeal uses the cake pattern.
 
 The general idea of the type macros I want to implement here is described in my
 blog post [Taming the Cake Pattern with Type
 Macros](http://scabl.blogspot.com/2013/03/cbdi-2.html).
+
+At the moment, these are still type macros.
 
 At the moment, congeal only builds against experimental "Kepler" branch of Scala.
 
@@ -31,31 +35,5 @@ Macros still to do:
   - mock[A]
     - have initial implementation of easyMock[A]. need to generalize
 
-Other TODO items:
-  - cull TODO and FIX comments from the code
-  - basic documentation
-  - test/implement: A inherits from B, api[A] inherits from api[B]
-  - test/implement: A inherits from B, impl[A] inherits from impl[B]
-  - test/implement: A inherits from B, component[A] inherits from component[B]
-  - test/implement: A has vals
-  - test/implement: A has non-public, non-private decls
-  - tests for type equivalence and other relations, such as:
-    - implicitly[api[A] =:= api[A]]
-    - implicitly[impl[A] <:< api[A]]
-
-Longer term ideas:
-  - improved error messages
-  - use AST and/or proxies to remove restrictions on the classes that can be congealed
-
-Error Messages to override:
-
-  - trait Bar { def bar: String = "bar" }
-    trait Foo extends hasDependency[Bar] { def foo: String = bar.bar }
-    impl[Foo]
-
-    object creation impossible, since method bar in trait hasDependencyOfBar of type => Bar is not defined
-      new impl[Foo] {}
-          ^
-    one error found
-
-
+My planning board is here:
+  - https://www.pivotaltracker.com/s/projects/850181
