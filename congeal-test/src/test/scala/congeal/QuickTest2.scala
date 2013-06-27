@@ -9,12 +9,12 @@ import congeal._
 
 /** testbed for the thing i am testing at the moment. */
 @RunWith(classOf[JUnit4])
-class QuickTest {
+class QuickTest2 {
 
   @Test
   def testQuick() {
     import congeal.examples.privateparts._
-    //type T = congeal.hidden.api.congeal.examples.privateparts.SFactory
+    type T = congeal.hidden.api.congeal.examples.privateparts.SFactory
     trait Foo
     val t = new Foo with componentImpl[SFactory] {}
 

@@ -22,33 +22,33 @@ trait UFactory {
   def createLetter(name: String): U = U(name)
 }
 
-trait LetterFactory extends
-  hasDependency[SFactory] with
-  hasDependency[TFactory] with
-  hasDependency[UFactory] {
+// trait LetterFactory extends
+//   hasDependency[SFactory] with
+//   hasDependency[TFactory] with
+//   hasDependency[UFactory] {
 
-  def createLetter(letter: Char, name: String): Letter = letter match {
-    case 'S' => sFactory.createLetter(name)
-    case 'T' => tFactory.createLetter(name)
-    case 'U' => uFactory.createLetter(name)
-    case _ => throw new Error
-  }
-}
+//   def createLetter(letter: Char, name: String): Letter = letter match {
+//     case 'S' => sFactory.createLetter(name)
+//     case 'T' => tFactory.createLetter(name)
+//     case 'U' => uFactory.createLetter(name)
+//     case _ => throw new Error
+//   }
+// }
 
-trait Factory extends
-  hasPart[LetterFactory] with
-  hasPrivatePart[SFactory] with
-  hasPrivatePart[TFactory] with
-  hasPrivatePart[UFactory]
+// trait Factory extends
+//   hasPart[LetterFactory] with
+//   hasPrivatePart[SFactory] with
+//   hasPrivatePart[TFactory] with
+//   hasPrivatePart[UFactory]
 
-abstract class Application extends componentApi[Factory] {
-  println(letterFactory.createLetter('S', "testName"))
+// abstract class Application extends componentApi[Factory] {
+//   println(letterFactory.createLetter('S', "testName"))
 
-  // uncomment me for compiler error:
-  // println(sFactory.createLetter("testName"))
-}
+//   // uncomment me for compiler error:
+//   // println(sFactory.createLetter("testName"))
+// }
 
-// outputs S(testName)
-object ApplicationTest extends App {
-  new Application with componentImpl[Factory]
-}
+// // outputs S(testName)
+// object ApplicationTest extends App {
+//   new Application with componentImpl[Factory]
+// }
