@@ -31,6 +31,9 @@ private[congeal] object macroImpls {
   def standsInFor[T: c.WeakTypeTag](c: Context): c.Tree =
     StandsInForMacroImpl(c)(t[T](c)).refToTopLevelClassDefEnsureSimple
 
+  def mock[T: c.WeakTypeTag](c: Context)(mocker: c.Expr[Function1[Class[_], _]]): c.Tree =
+    MockMacroImpl(c)(t[T](c))(mocker).refToTopLevelClassDefEnsureSimple
+
   def easyMock[T: c.WeakTypeTag](c: Context): c.Tree =
     EasyMockMacroImpl(c)(t[T](c)).refToTopLevelClassDefEnsureSimple
 

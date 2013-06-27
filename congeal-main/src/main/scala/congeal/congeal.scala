@@ -51,6 +51,12 @@ package object congeal {
     */
   type standsInFor[A] = macro macroImpls.standsInFor[A]
 
+  /** Indicates a mock replacement component for the supplied type `A`.
+    * @tparam A the base type of the mock component
+    * @param f a function that produces a mock object for the supplied type
+    */
+  type mock[A](mocker: Function1[Class[_], _]) = macro macroImpls.mock[A]
+
   /** Indicates an EasyMock replacement component for the supplied type `A`.
     * @tparam A the base type of the mock component
     */

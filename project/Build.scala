@@ -29,7 +29,8 @@ object MyBuild extends Build {
     file("congeal-main"),
     settings = buildSettings ++ Seq(
       libraryDependencies <+= (scalaVersion)("org.scala-lang.macro-paradise" % "scala-reflect" % _),
-      libraryDependencies += "org.easymock" % "easymock" % "3.1" % "optional")
+      libraryDependencies += "org.easymock" % "easymock" % "3.1" % "optional",
+      libraryDependencies += "org.jmock" % "jmock-junit4" % "2.6.0" % "optional")
   )
 
   lazy val examples = Project(
