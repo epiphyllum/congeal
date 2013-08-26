@@ -1,4 +1,8 @@
-A collection of macro annotations for doing dependency injection.
+A collection of type macros (or annotation macros) for doing dependency injection.
+
+*Please note* this project is *on ice* until I hear that either type
+ macros or annotation macros are going to make it into the main Scala
+ branch, at least as an experimental feature.
 
 Under the hood, congeal uses the cake pattern.
 
